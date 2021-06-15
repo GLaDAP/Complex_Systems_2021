@@ -29,7 +29,7 @@ pie_chart = PieChartModule(
 model_params = {
     "height": 100,
     "width": 100,
-    "density": UserSettableParameter("slider", "Tree density", 0.65, 0.01, 1.0, 0.01),
+    "density_trees": UserSettableParameter("slider", "Tree density", 0.65, 0.01, 1.0, 0.01),
 }
 server = ModularServer(
     ForestFire, [canvas_element, tree_chart, pie_chart], "Forest Fire", model_params

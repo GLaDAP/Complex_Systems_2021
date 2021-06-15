@@ -3,7 +3,7 @@ from mesa.datacollection import DataCollector
 from mesa.space import Grid
 from mesa.time import RandomActivation
 
-from .agent import TreeCell
+from .agent import Tree
 
 
 class ForestFire(Model):
@@ -11,7 +11,7 @@ class ForestFire(Model):
     Simple Forest Fire model.
     """
 
-    def __init__(self, height=100, width=100, density=0.65):
+    def __init__(self, height=100, width=100, density_trees=0.65):
         """
         Create a new forest fire model.
 
@@ -32,12 +32,13 @@ class ForestFire(Model):
         )
 
         # Place a tree in each cell with Prob = density
+        # print(self.grid.x)
         for (contents, x, y) in self.grid.coord_iter():
-            if self.random.random() < density:
+            if self.random.random() < density_trees:
                 # Create a tree
-                new_tree = TreeCell((x, y), self)
+                new_tree = Tree((x, y), self)
                 # Set all trees in the first column on fire.
-                if x == 0:
+                if self.random.random() < 0.001:
                     new_tree.condition = "On Fire"
                 self.grid._place_agent((x, y), new_tree)
                 self.schedule.add(new_tree)
