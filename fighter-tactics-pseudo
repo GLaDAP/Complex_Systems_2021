@@ -1,0 +1,65 @@
+## Propose 3 strategies for firefighting ##
+1. Random movements - fight if fire is encountered
+2. Fight closest fire
+3. Fight largest fire
+4. Call fighting plane
+(5. Collective strategy, might be to complex for the size of this project.)
+
+### 1. RANDOM FIGHTING ###
+- Take step in random direction
+- If fire is encountered:
+      - Fight fire
+
+### 2. FIGHT CLOSEST FIRE/BURNING TREE ###
+- burning_trees = 0
+- For x,y in search_range:
+      - If (x,y) = burning_tree:
+            - burning_trees +- 1 
+- If burning_trees > 0:
+      - For i in range(burning_trees):
+            - Measure distance (# steps) to tree
+      - Determine closest burrning tree (with coordinates x_closest_tree, y_closest_tree)
+      - If x_agent < x_closest_tree:
+        - x_agent += 1
+      - Elif x_agent > x_closest_tree:
+        - x_agent -= 1
+      - Elif y_agent < y_closest_tree:
+        - y_agent += 1
+      - Elif y_agent > y_closest_tree:
+        - y_agent -= 1
+      - Else:
+        - Fight fire
+- Else:
+  - Take step in random direction
+  
+### 3. FIGHT LARGEST FIRE ###
+- fires = []
+- For x,y in search_range:
+      - If (x,y) = burning_tree:
+            - fire = (x,y)
+            - next_tree_burning = True
+            - while next_tree_burning:
+                  - If (x+1,y) = burning_tree:
+                        - fire = (x+1,y) ######################## WIP
+- If len(fires) > 0:
+      - Take closest tree of largest fire as target (with coordinates x_closest_tree, y_closest_tree)
+      - If x_agent < x_closest_tree:
+        - x_agent += 1
+      - Elif x_agent > x_closest_tree:
+        - x_agent -= 1
+      - Elif y_agent < y_closest_tree:
+        - y_agent += 1
+      - Elif y_agent > y_closest_tree:
+        - y_agent -= 1
+      - Else:
+        - Fight fire
+- Else:
+  - Take step in random direction
+  
+### 4. CALL FIGHTING PLANE ###
+- Similar to "FIGHT LARGEST FIRE", find largest fire within observation range
+- Either send plane that solves larger area, or that has higher impact on intensity
+  
+  
+Notes:
+- Search range could be parameter setting
