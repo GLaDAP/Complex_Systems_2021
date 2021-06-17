@@ -63,3 +63,9 @@
   
 Notes:
 - Search range could be parameter setting
+
+### 5. Setting fire line/ fire break (maybe not an agent)
+      -fire lines could be straight& vertical lines in the grid.
+      -remove the trees which on the fire line.
+      -fire has a lower probability to cross the fire line/ only the fire with a certain intensity can cross the fire line.
+      -set multiple fire lines.
