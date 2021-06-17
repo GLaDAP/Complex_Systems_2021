@@ -39,7 +39,7 @@ class FireFighter(Walker):
         if any(neighbouring_trees.condition == 'On fire'):
             slice_nb = [tree for tree in neighbouring_trees if tree.condition == 'On fire']
             burning_tree = self.random.choice(slice_nb)
-            burning_tree.condition = 'Fine'
+            burning_tree.burning_rate -= self.extg_strength
             self.fires_extg += 1
         else:
             self.random_move()
