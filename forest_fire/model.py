@@ -3,15 +3,23 @@ from mesa.datacollection import DataCollector
 from mesa.space import Grid
 from mesa.time import RandomActivation
 
-from .agent import Tree
+import numpy as np
 
+from .tree import Tree
 
 class ForestFire(Model):
     """
     Simple Forest Fire model.
     """
 
-    def __init__(self, height=100, width=100, density_trees=0.65):
+    def __init__(
+        self,
+        height=128,
+        width=128,
+        density_trees=0.65,
+        growth_rate=10,
+        burn_speed=10
+    ):
         """
         Create a new forest fire model.
 
@@ -22,12 +30,12 @@ class ForestFire(Model):
         # Set up model objects
         self.schedule = RandomActivation(self)
         self.grid = Grid(height, width, torus=False)
-
+        self.growth_rate = growth_rate
+        self.burn_speed = burn_speed
         self.datacollector = DataCollector(
             {
                 "Fine": lambda m: self.count_type(m, "Fine"),
                 "On Fire": lambda m: self.count_type(m, "On Fire"),
-                "Burned Out": lambda m: self.count_type(m, "Burned Out"),
             }
         )
 
@@ -36,7 +44,8 @@ class ForestFire(Model):
         for (contents, x, y) in self.grid.coord_iter():
             if self.random.random() < density_trees:
                 # Create a tree
-                new_tree = Tree((x, y), self)
+                initial_hp = np.random.randint(10,100)
+                new_tree = Tree((x, y), self, initial_hp)
                 # Set all trees in the first column on fire.
                 if self.random.random() < 0.001:
                     new_tree.condition = "On Fire"
