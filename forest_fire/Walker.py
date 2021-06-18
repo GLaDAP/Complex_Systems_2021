@@ -37,7 +37,7 @@ class Walker(Agent):
         """
         Method for randomly moving the agent over the grid
         """
-        possible_moves = self.model.grid.get_neigborhood(
+        possible_moves = self.model.grid.get_neighborhood(
             pos = self.pos,
             moore = self.moore,
             include_center = False

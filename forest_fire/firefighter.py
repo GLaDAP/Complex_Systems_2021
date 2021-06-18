@@ -6,7 +6,7 @@ DESCRIPTION: FireFighter class with functions to extinguish fires.
              This class inherits the walker class.
 """
 from forest_fire.tree import Tree
-from Walker import Walker
+from forest_fire.Walker import Walker
 
 class FireFighter(Walker):
     """
@@ -20,8 +20,8 @@ class FireFighter(Walker):
         extg_strength: int within range [0, 100]
     """
 
-    def __init__(self, unique_id, pos, model, moore, extg_strength):
-        super().__init__(unique_id, pos, model, moore=moore)
+    def __init__(self, unique_id, pos, model, extg_strength):
+        super().__init__(unique_id, pos, model)
         self.extg_strength = extg_strength
         self.fires_extg = 0
 
@@ -37,10 +37,11 @@ class FireFighter(Walker):
             radius = 1
         )
         neighbouring_trees = [agent for agent in neighbors if isinstance(agent, Tree)]
-        if any(neighbouring_trees.condition == 'On fire'):
-            slice_nb = [tree for tree in neighbouring_trees if tree.condition == 'On fire']
-            burning_tree = self.random.choice(slice_nb)
-            burning_tree.condition = 'Fine'
+        burning_trees = [tree for tree in neighbouring_trees if tree.condition == 'On fire']
+
+        if len(burning_trees) > 0:
+            burning_tree = self.random.choice(burning_trees)
+            burning_tree.extinguish(self.extg_strength)
             self.fires_extg += 1
         else:
             self.random_move()

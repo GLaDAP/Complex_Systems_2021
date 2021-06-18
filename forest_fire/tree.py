@@ -19,7 +19,7 @@ class Tree(Agent):
     practice to give one to each agent anyway.
     """
 
-    def __init__(self, pos, model, initial_hp):
+    def __init__(self, unique_id, pos, model, initial_hp):
         """
         Create a new tree.
         Args:
@@ -27,7 +27,7 @@ class Tree(Agent):
             pos (tuple): The tree's coordinates on the grid.
             model (mesa.Model): standard model reference for agent.
         """
-        super().__init__(pos, model)
+        super().__init__(unique_id, model)
         self.pos = pos
         self.health = initial_hp
         self.burn_rate = 0

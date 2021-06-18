@@ -1,3 +1,4 @@
+from forest_fire.firefighter import FireFighter
 from mesa import Model
 from mesa.datacollection import DataCollector
 from mesa.space import Grid
@@ -42,6 +43,7 @@ class ForestFire(Model):
             max_trees_hp (int): The maximum amount of health a tree can have.
         """
         # Set up model objects
+        super().__init__()
         self.schedule = RandomActivation(self)
         self.grid = Grid(height, width, torus=False)
         # Width parameter used to set a boundary value for random generation
@@ -71,13 +73,21 @@ class ForestFire(Model):
             if self.random.random() < density_trees:
                 # Create a tree
                 initial_hp = np.random.randint(10, self.max_trees_hp)
-                new_tree = Tree((x, y), self, initial_hp)
-                # Set all trees in the first column on fire.
-                # if self.random.random() < 0.001:
-                #     new_tree.condition = "On Fire"
+                new_tree = Tree(self.next_id(), (x, y), self, initial_hp)
+                # Set some random trees on fire
+                if self.random.random() < 0.001:
+                    new_tree.condition = "On Fire"
                 self.grid._place_agent((x, y), new_tree)
                 self.schedule.add(new_tree)
-        self.initialize_fire_area()
+        
+        # Place N firefighters on the grid
+        for _ in range(20):
+            coord = (self.random.randint(0, width-1),
+                     self.random.randint(0, height-1))
+            print(coord)
+            new_firefigher = FireFighter(self.next_id(), coord, self, self.random.randint(50,100))
+            self.grid._place_agent(coord, new_firefigher)
+            self.schedule.add(new_firefigher) 
         self.running = True
         self.datacollector.collect(self)
 
@@ -136,10 +146,34 @@ class ForestFire(Model):
                 x, y = coordinate
                 # Cell is empty, add a tree
                 initial_hp = np.random.randint(10, self.max_trees_hp)
-                new_tree = Tree((x, y), self, initial_hp)
+                new_tree = Tree(
+                    unique_id=self.next_id(),
+                    pos=(x, y), 
+                    model=self, 
+                    initial_hp=initial_hp)
                 # Set all trees in the first column on fire.
                 self.grid._place_agent((x, y), new_tree)
                 self.schedule.add(new_tree)
+
+    def ignite_random_tree(self, chance=0.0001):
+        """
+        Ignites a random tree during a step
+        """
+        coordinates = np.random.randint(
+            0,
+            self.width,
+            (self.new_trees_per_step, 2)
+        )
+        trees = self.grid.get_neighbors(
+            pos = self.random.choice(coordinates),
+            moore = False,
+            include_center = True,
+            radius = 1
+        )
+        trees = [tree for tree in trees if isinstance(tree, Tree)]
+        if self.random.random() < chance:
+            for tree in trees:
+                tree.set_on_fire()
 
     def step(self):
         """
@@ -160,7 +194,8 @@ class ForestFire(Model):
         Helper method to count trees in a given condition in a given model.
         """
         count = 0
-        for tree in model.schedule.agents:
+        trees = [agent for agent in model.schedule.agents if isinstance(agent, Tree)]
+        for tree in trees:
             if tree.condition == tree_condition:
                 count += 1
         return count
