@@ -1,21 +1,38 @@
+from forest_fire.firefighter import FireFighter
 from mesa.visualization.modules import CanvasGrid, ChartModule, PieChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
 from .model import ForestFire
 
-COLORS = {"Fine": "#00AA00", "On Fire": "#880000", "Burned Out": "#000000"}
+from forest_fire.tree import Tree
+from forest_fire.Walker import Walker
+
+COLORS = {"Fine": "#00AA00", 
+          "On Fire": "#880000", 
+          "Burned Out": "#000000",
+          "FireFighter": "black"}
 
 
-def forest_fire_portrayal(tree):
-    if tree is None:
+def forest_fire_portrayal(agent):
+
+    # if empty
+    if agent is None:
         return
-    portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-    (x, y) = tree.pos
-    portrayal["x"] = x
-    portrayal["y"] = y
-    portrayal["Color"] = COLORS[tree.condition]
-    return portrayal
+    elif isinstance(agent, Tree):
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        (x, y) = agent.pos
+        portrayal["x"] = x
+        portrayal["y"] = y
+        portrayal["Color"] = COLORS[agent.condition]
+        return portrayal
+    elif isinstance(agent, FireFighter):
+        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
+        (x, y) = agent.pos
+        portrayal["x"] = x
+        portrayal["y"] = y
+        portrayal["Color"] = COLORS["FireFighter"]
+        return portrayal
 
 
 canvas_element = CanvasGrid(forest_fire_portrayal, 128, 128, 512, 512)
