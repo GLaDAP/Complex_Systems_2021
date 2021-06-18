@@ -65,7 +65,7 @@ class ForestFire(Model):
                 # Create a tree
                 initial_hp = np.random.randint(10, self.max_trees_hp)
                 new_tree = Tree((x, y), self, initial_hp)
-                # Set all trees in the first column on fire.
+                # Set some random trees on fire
                 if self.random.random() < 0.001:
                     new_tree.condition = "On Fire"
                 self.grid._place_agent((x, y), new_tree)
@@ -96,6 +96,27 @@ class ForestFire(Model):
                 # Set all trees in the first column on fire.
                 self.grid._place_agent((x, y), new_tree)
                 self.schedule.add(new_tree)
+
+    def ignite_random_tree(self, chance=0.0001):
+        """
+        Ignites a random tree during a step
+        """
+        coordinates = np.random.randint(
+            0,
+            self.width,
+            (self.new_trees_per_step, 2)
+        )
+        trees = self.grid.get_neighbors(
+            pos = self.random.choice(coordinates),
+            moore = False,
+            include_center = True,
+            radius = 1
+        )
+        trees = [tree for tree in trees if isinstance(tree, Tree)]
+        if self.random.random() < chance:
+            for tree in trees:
+                tree.set_on_fire()
+        
 
     def step(self):
         """
