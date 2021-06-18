@@ -6,7 +6,6 @@ A tree has the following conditions:
 - On Fire: If on fire, health is reducing untill 0. After that, the agent is removed.
 """
 
-
 class Tree(Agent):
     """
     A tree cell.
@@ -31,25 +30,58 @@ class Tree(Agent):
         super().__init__(pos, model)
         self.pos = pos
         self.health = initial_hp
-        self.burn_grade = 0
+        self.burn_rate = 0
         self.condition = "Fine"
+
+    def __update_tree_on_fire(self):
+        if self.burn_rate <= 0:
+            # In case the fire is already extinguished
+            self.condition = "Fine"
+            self.burn_rate = 0 # in case the burn_rate is negative after extinguishing
+            self.health += self.model.growth_rate
+        # Tree is burning down 
+        self.burn_rate += self.model.burn_rate
+        self.health -= self.burn_rate
+        if self.health < 0:
+            # Tree burned down completely. Remove from scheduler.
+            self.model.grid._remove_agent(self.pos, self)
+            self.model.schedule.remove(self)
+        
+        if self.burn_rate > self.model.ignition_threshold:
+            # Set Neighbours on fire
+            trees = self.get_neighbours()
+            for tree in trees:
+                tree.set_on_fire()
+
+    def set_on_fire(self):
+        self.condition = "On Fire"
+        self.burn_rate += self.model.burn_rate
+
+    def extinguish(self, extinguish_intensity):
+        self.burn_rate -= extinguish_intensity
+
+    def get_neighbours(self):
+        """
+        Get the neighboring trees.
+        """
+        agents_in_radius = self.model.grid.get_neighbors(
+            self.pos,
+            moore=True, # Only direct neighbours, no diagonals
+            include_center=False,
+            radius=1
+        )
+        trees = [
+            agent for agent in agents_in_radius if isinstance(agent, Tree)
+        ]
+        return trees
 
     def step(self):
         """
         If the tree is on fire, spread it to fine trees nearby.
         """
         if self.condition == "On Fire":
-            if self.burn_grade <= 0:
-                # In case the fire is already extinguished
-                self.condition = "Fine"
-                self.burn_grade = 0
-            # Tree is burning down 
-            self.burn_grade += self.model.burn_speed
-            if self.burn_grade > 100:
-                # Tree burned down completely
-                self.model.grid._remove_agent(self.pos, self)
-                self.model.schedule.remove(self)
+            self.__update_tree_on_fire()
         else:
             # Tree is not on fire, so let it grow untill 100
-            if self.health < 100:
+            if self.health < self.model.max_trees_hp:
                 self.health += self.model.growth_rate
