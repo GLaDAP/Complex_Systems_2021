@@ -18,7 +18,7 @@ def forest_fire_portrayal(tree):
     return portrayal
 
 
-canvas_element = CanvasGrid(forest_fire_portrayal, 100, 100, 500, 500)
+canvas_element = CanvasGrid(forest_fire_portrayal, 128, 128, 512, 512)
 tree_chart = ChartModule(
     [{"Label": label, "Color": color} for (label, color) in COLORS.items()]
 )
@@ -27,9 +27,13 @@ pie_chart = PieChartModule(
 )
 
 model_params = {
-    "height": 100,
-    "width": 100,
+    "height": 128,
+    "width": 128,
     "density_trees": UserSettableParameter("slider", "Tree density", 0.65, 0.01, 1.0, 0.01),
+    "growth_rate": UserSettableParameter("slider", "Growth rate", 10, 0, 25, 5),
+    "burn_rate": UserSettableParameter("slider", "Burn rate", 10, 0, 50, 5),
+    "ignition_threshold": UserSettableParameter("slider", "Ignition threshold", 5, 0, 50, 5),
+    "new_trees_per_step": UserSettableParameter("slider", "New trees per step", 100, 0, 1000, 25)
 }
 server = ModularServer(
     ForestFire, [canvas_element, tree_chart, pie_chart], "Forest Fire", model_params
