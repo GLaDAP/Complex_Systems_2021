@@ -5,6 +5,7 @@ AUTHOR(S):   Sam Kuilboer
 DESCRIPTION: FireFighter class with functions to extinguish fires. 
              This class inherits the walker class.
 """
+from forest_fire.tree import Tree
 from Walker import Walker
 
 class FireFighter(Walker):
@@ -35,7 +36,7 @@ class FireFighter(Walker):
             include_center = False,
             radius = 1
         )
-        neighbouring_trees = [agent for agent in neighbors if isinstance(agent, CLASS>TREE)]
+        neighbouring_trees = [agent for agent in neighbors if isinstance(agent, Tree)]
         if any(neighbouring_trees.condition == 'On fire'):
             slice_nb = [tree for tree in neighbouring_trees if tree.condition == 'On fire']
             burning_tree = self.random.choice(slice_nb)

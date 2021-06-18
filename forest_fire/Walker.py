@@ -8,6 +8,7 @@ DESCRIPTION: Walker class, with functions to move agents in a certain manner:
                 - organized << is not yet implemented
 """
 
+from forest_fire.tree import Tree
 from mesa import Agent
 import heapq
 
@@ -59,7 +60,7 @@ class Walker(Agent):
             include_center = False,
             radius = radius
         )
-        neighbouring_trees = [agent for agent in neighbours if isinstance(agent, CLASS>TREE)]
+        neighbouring_trees = [agent for agent in neighbours if isinstance(agent, Tree)]
         burning_trees = [tree for tree in neighbouring_trees if tree.condition == 'On fire']
         if burning_trees > 0:
             ordered_trees = self.__get_closest_tree(burning_trees)
