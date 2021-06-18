@@ -19,6 +19,7 @@ class ForestFire(Model):
         density_trees=0.65,
         growth_rate=10,
         burn_rate=10,
+        initial_fire_size=5,
         ignition_threshold=5,
         new_trees_per_step=500,
         max_trees_hp=100
@@ -46,7 +47,7 @@ class ForestFire(Model):
         self.width = width
         self.growth_rate = growth_rate
         self.burn_rate = burn_rate
-
+        self.initial_fire_size = initial_fire_size
         self.new_trees_per_step = new_trees_per_step
         self.ignition_threshold = ignition_threshold
         self.max_trees_hp = max_trees_hp
@@ -66,13 +67,42 @@ class ForestFire(Model):
                 initial_hp = np.random.randint(10, self.max_trees_hp)
                 new_tree = Tree((x, y), self, initial_hp)
                 # Set all trees in the first column on fire.
-                if self.random.random() < 0.001:
-                    new_tree.condition = "On Fire"
+                # if self.random.random() < 0.001:
+                #     new_tree.condition = "On Fire"
                 self.grid._place_agent((x, y), new_tree)
                 self.schedule.add(new_tree)
-
+        self.initialize_fire_area()
         self.running = True
         self.datacollector.collect(self)
+
+    def initialize_fire_area(self):
+        """
+        Initialize fire area in the model after creation of the forest.
+        """
+        # 1. Select random point on the grid where a tree is present
+        coordinates = np.random.randint(
+            0,
+            self.width,
+            (100, 2)
+        )
+        cells = self.grid.get_cell_list_contents(coordinates)
+        # Take the first one from the list
+        tree_object = cells.pop()
+        # Get the radius as long as not 
+        total_fires = 0
+        while tree_object is not None and total_fires < self.initial_fire_size:
+            agents_in_radius = self.grid.get_neighbors(
+                tree_object.pos,
+                moore=True, # Only direct neighbours, no diagonals
+                include_center=False,
+                radius=1
+            )
+            tree_object.set_on_fire()
+            total_fires += 1
+            if agents_in_radius:
+                tree_object = agents_in_radius.pop()
+            else:
+                tree_object = None
 
     def plant_new_trees(self):
         """
