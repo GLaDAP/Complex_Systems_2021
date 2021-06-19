@@ -36,7 +36,7 @@ def forest_fire_portrayal(agent):
         return portrayal
 
 
-canvas_element = CanvasGrid(forest_fire_portrayal, 128, 128)
+canvas_element = CanvasGrid(forest_fire_portrayal, 128, 128, 512, 512)
 tree_chart = ChartModule(
     [{"Label": label, "Color": color} for (label, color) in COLORS.items()]
 )
