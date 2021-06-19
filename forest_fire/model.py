@@ -1,7 +1,7 @@
 from forest_fire.firefighter import FireFighter
 from mesa import Model
 from mesa.datacollection import DataCollector
-from mesa.space import Grid
+from mesa.space import MultiGrid
 from mesa.time import RandomActivation
 import numpy as np
 
@@ -46,7 +46,7 @@ class ForestFire(Model):
         # Set up model objects
         super().__init__()
         self.schedule = RandomActivation(self)
-        self.grid = Grid(height, width, torus=False)
+        self.grid = MultiGrid(height, width, torus=False)
         # Width parameter used to set a boundary value for random generation
         # of coordinates
         self.width = width

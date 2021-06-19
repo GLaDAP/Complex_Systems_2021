@@ -1,0 +1,22 @@
+{
+    "grid": {
+        "width": 10,
+        "height": 10
+    },
+    "model": {
+        "density_trees": 0.5,
+        "burn_rate": 5,
+        "ignition_prob": 0.8,
+        "colors": {
+            "On fire": "red",
+            "Burned": "black",
+            "Fine": "green"
+        }
+    },
+    "agents": {
+        "tree": {
+            "max_hp": 100,
+            "burn_rate": 10
+        }  
+    }
+}
