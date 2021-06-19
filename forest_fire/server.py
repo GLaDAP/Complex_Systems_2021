@@ -50,7 +50,8 @@ model_params = {
     "growth_rate": UserSettableParameter("slider", "Growth rate", 10, 0, 25, 5),
     "burn_rate": UserSettableParameter("slider", "Burn rate", 10, 0, 50, 5),
     "ignition_threshold": UserSettableParameter("slider", "Ignition threshold", 5, 0, 50, 5),
-    "new_trees_per_step": UserSettableParameter("slider", "New trees per step", 100, 0, 1000, 25)
+    "new_trees_per_step": UserSettableParameter("slider", "New trees per step", 100, 0, 1000, 25),
+    "initial_fire_size": UserSettableParameter("slider", "Initial Fire size", 5, 1, 50, 1)
 }
 server = ModularServer(
     ForestFire, [canvas_element, tree_chart, pie_chart], "Forest Fire", model_params

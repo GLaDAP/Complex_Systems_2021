@@ -20,6 +20,7 @@ class ForestFire(Model):
         density_trees=0.65,
         growth_rate=10,
         burn_rate=10,
+        initial_fire_size=5,
         ignition_threshold=5,
         new_trees_per_step=500,
         max_trees_hp=100
@@ -45,12 +46,18 @@ class ForestFire(Model):
         super().__init__()
         self.schedule = RandomActivation(self)
         self.grid = Grid(height, width, torus=False)
+        # Width parameter used to set a boundary value for random generation
+        # of coordinates
         self.width = width
+        # Rates used by Tree
         self.growth_rate = growth_rate
         self.burn_rate = burn_rate
-
         self.new_trees_per_step = new_trees_per_step
+
+        self.initial_fire_size = initial_fire_size
+        # Threshold when a fire spreads to another tree
         self.ignition_threshold = ignition_threshold
+        # Maximum health points a tree can have
         self.max_trees_hp = max_trees_hp
 
         self.datacollector = DataCollector(
@@ -62,7 +69,7 @@ class ForestFire(Model):
 
         # Place a tree in each cell with Prob = density
         # print(self.grid.x)
-        for (contents, x, y) in self.grid.coord_iter():
+        for (_, x, y) in self.grid.coord_iter():
             if self.random.random() < density_trees:
                 # Create a tree
                 initial_hp = np.random.randint(10, self.max_trees_hp)
@@ -81,9 +88,45 @@ class ForestFire(Model):
             new_firefigher = FireFighter(self.next_id(), coord, self, self.random.randint(50,100))
             self.grid._place_agent(coord, new_firefigher)
             self.schedule.add(new_firefigher) 
-
         self.running = True
         self.datacollector.collect(self)
+
+    def initialize_fire_area(self):
+        """
+        Initialize fire area in the model after creation of the forest.
+        """
+        # 1. Select random point on the grid where a tree is present
+        coordinates = np.random.randint(
+            0,
+            self.width,
+            (100, 2)
+        )
+        cells = self.grid.get_cell_list_contents(coordinates)
+        # Take the first one from the list
+        previous_trees = []
+        tree_object = cells.pop()
+        # Get the radius as long as not 
+        total_fires = 0
+        while tree_object is not None and total_fires < self.initial_fire_size:
+            previous_trees.append(tree_object)
+            print(f"Set tree on fires {total_fires}")
+            agents_in_radius = self.grid.get_neighbors(
+                tree_object.pos,
+                moore=True, # Only direct neighbours, no diagonals
+                include_center=False,
+                radius=1
+            )
+            print(tree_object.pos)
+            tree_object.set_on_fire()
+            total_fires += 1
+            if agents_in_radius:
+                while tree_object in previous_trees and agents_in_radius:
+                    tree_object = np.random.choice(agents_in_radius)
+                    agents_in_radius.remove(tree_object)
+                    print("Tree in list")
+            else:
+                print("No agents in radius")
+                tree_object = None
 
     def plant_new_trees(self):
         """
