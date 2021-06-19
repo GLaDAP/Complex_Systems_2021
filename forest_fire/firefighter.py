@@ -43,6 +43,6 @@ class FireFighter(Walker):
             burning_tree = self.random.choice(burning_trees)
             burning_tree.extinguish(self.extg_strength)
             self.fires_extg += 1
-        else:
-            self.random_move()
+        
+        self.random_move()
 

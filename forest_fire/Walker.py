@@ -45,7 +45,7 @@ class Walker(Agent):
         move = self.random.choice(possible_moves)
         self.model.grid.move_agent(self, move)
 
-    def move_towards_closest_fire(self, radius=3):
+    def move_towards_closest_fire(self, radius=5):
         """
         The agent moves to the closest fire. If none is spotted it 
         moves to a random spot.
@@ -62,7 +62,7 @@ class Walker(Agent):
         )
         neighbouring_trees = [agent for agent in neighbours if isinstance(agent, Tree)]
         burning_trees = [tree for tree in neighbouring_trees if tree.condition == 'On fire']
-        if burning_trees > 0:
+        if len(burning_trees) > 0:
             ordered_trees = self.__get_closest_tree(burning_trees)
             self.model.grid.move_agent(self, ordered_trees[1].pos)
         else:

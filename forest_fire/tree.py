@@ -40,8 +40,8 @@ class Tree(Agent):
             self.burn_rate = 0 # in case the burn_rate is negative after extinguishing
             self.health += self.model.growth_rate
         # Tree is burning down 
-        self.burn_rate += self.model.burn_rate
         self.health -= self.burn_rate
+        self.burn_rate += self.model.burn_rate
         if self.health < 0:
             # Tree burned down completely. Remove from scheduler.
             self.model.grid._remove_agent(self.pos, self)
@@ -66,7 +66,7 @@ class Tree(Agent):
         """
         agents_in_radius = self.model.grid.get_neighbors(
             self.pos,
-            moore=True, # Only direct neighbours, no diagonals
+            moore=False, # Only direct neighbours, no diagonals
             include_center=False,
             radius=1
         )

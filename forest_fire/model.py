@@ -23,7 +23,8 @@ class ForestFire(Model):
         initial_fire_size=5,
         ignition_threshold=5,
         new_trees_per_step=500,
-        max_trees_hp=100
+        max_trees_hp=100,
+        initial_firefighters=1,
     ):
         """
         Create a new forest fire model.
@@ -81,10 +82,9 @@ class ForestFire(Model):
                 self.schedule.add(new_tree)
         
         # Place N firefighters on the grid
-        for _ in range(20):
+        for _ in range(initial_firefighters):
             coord = (self.random.randint(0, width-1),
                      self.random.randint(0, height-1))
-            print(coord)
             new_firefigher = FireFighter(self.next_id(), coord, self, self.random.randint(50,100))
             self.grid._place_agent(coord, new_firefigher)
             self.schedule.add(new_firefigher) 
@@ -116,7 +116,6 @@ class ForestFire(Model):
                 include_center=False,
                 radius=1
             )
-            print(tree_object.pos)
             tree_object.set_on_fire()
             total_fires += 1
             if agents_in_radius:
