@@ -1,16 +1,18 @@
 {
     "grid": {
-        "width": 10,
-        "height": 10
+        "width": 25,
+        "height": 25
     },
     "model": {
-        "density_trees": 0.5,
-        "burn_rate": 5,
-        "ignition_prob": 0.8,
+        "N_firefighters": 100,
+        "density_trees": 0.9,
+        "max_burn_rate": 5,
+        "ignition_prob": 0.5,
         "colors": {
             "On fire": "red",
             "Burned": "black",
-            "Fine": "green"
+            "Fine": "green",
+            "FireFighter": "blue"
         }
     },
     "agents": {

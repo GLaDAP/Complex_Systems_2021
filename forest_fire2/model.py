@@ -1,13 +1,14 @@
+from forest_fire2.firefighter import FireFighter
 from mesa import Model, Agent
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 
-from .new_tree import Tree
+from .tree import Tree
 
 class ForestFire(Model):
 
-    def __init__(self, height, width, density_trees, burn_rate, ignition_prob, max_hp):
+    def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob, max_hp):
         super().__init__()
 
         self.height = height
@@ -15,12 +16,13 @@ class ForestFire(Model):
 
         self.grid = MultiGrid(height, width, torus=False)
         self.trees = []
+        self.firefighters = []
 
         self.schedule_Tree = RandomActivation(self)
         self.schedule_FireFighter = RandomActivation(self)
 
         self.density_trees = density_trees
-        self.burn_rate = burn_rate
+        self.max_burn_rate = max_burn_rate
         self.ignition_prob = ignition_prob
         self.max_hp = max_hp
 
@@ -33,7 +35,7 @@ class ForestFire(Model):
         )
         self._init_trees()
         self._init_fire()
-
+        self._init_firefighter()
 
         self.running = True
 
@@ -46,15 +48,28 @@ class ForestFire(Model):
                 self.grid._place_agent((x,y), new_tree)
                 self.trees.append(new_tree)
                 self.schedule_Tree.add(new_tree)
+        print('Done')
 
     def _init_fire(self):
         tree = self.random.choice(self.trees)
         print(tree.unique_id, tree.pos)
         tree._ignite(start=True)
 
+    def _init_firefighter(self, N=100):
+        
+        for _ in range(N):
+            # x, y = self.random.randint(0, self.height - 1), self.random.randint(0, self.width -1)
+            x, y = 3, self.random.randint(0, self.width -1)
+            firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20)
+            self.grid._place_agent((x,y), firefighter)
+            self.firefighters.append(firefighter)
+            self.schedule_FireFighter.add(firefighter)
+
     def step(self):
 
         self.schedule_Tree.step()
+        self.schedule_FireFighter.step()
+
         self.datacollector.collect(self)
         
         if self.count_type(self, 'On fire') == 0:
