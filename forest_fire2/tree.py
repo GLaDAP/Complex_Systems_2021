@@ -3,6 +3,14 @@ from mesa import Agent
 class Tree(Agent):
 
     def __init__(self, unique_id, pos, model):
+        """
+        Class which represents a tree agent
+
+        :param unique_id: Unique id for every agent, model.next_id().
+        :param pos: Position of the tree on the grid
+        :param model: The forest_fire model
+        """
+
         super().__init__(unique_id, model)
         self.pos = pos
         self.condition = "Fine"
@@ -11,6 +19,11 @@ class Tree(Agent):
         self.being_extinghuished = False
 
     def _ignite(self, start=False):
+        """
+        Method for igniting a tree
+
+        :param start: When starting no probability is applied.
+        """
 
         if start == True:
             self.condition = "On fire"
@@ -19,6 +32,12 @@ class Tree(Agent):
             self.burn_rate = self.random.choice(range(1, self.model.max_burn_rate))
     
     def _extinguish(self, firefighter):
+        """
+        Method for extinghuising a tree
+
+        :param firefighter: The firefighter which is currently extinghuising 
+                            the tree.
+        """
         
         self.burn_rate -= firefighter.extg_strength
         if self.burn_rate <= 0:
@@ -26,9 +45,16 @@ class Tree(Agent):
             self.condition = 'Fine'
 
     def _get_pos(self):
+        """
+        Method which returns the position
+        """
         return self.pos
         
     def step(self):
+        """
+        Method for proceeding one step in the model. 
+        """
+
 
         # if on fire
         if self.condition == "On fire":

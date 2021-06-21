@@ -15,6 +15,11 @@ with open('forest_fire2/config.json') as json_file:
     json_file.close()
 
 def model_portrayal(agent):
+    """
+    Function for portraying the information of the model on a grid.
+
+    :param agent: Agent which can be either a tree or a firefighter.
+    """
 
     if isinstance(agent, Tree):
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
@@ -36,11 +41,13 @@ def model_portrayal(agent):
         portrayal["Color"] = CONFIG['model']['colors']['FireFighter']
         return portrayal
 
+# The grid
 canvas_element = CanvasGrid(model_portrayal, 
                             CONFIG['grid']['width'], 
                             CONFIG['grid']['height'], 
                             500, 500)
 
+# Parameters for the forest_fire model
 model_parameters = {
     'width': CONFIG['grid']['width'],
     'height': CONFIG['grid']['height'],
@@ -50,6 +57,7 @@ model_parameters = {
     'max_hp': CONFIG['agents']['tree']['max_hp']
 }
 
+# Start the server
 server = ModularServer(ForestFire, [canvas_element], "Forest Fire", model_parameters)
 
 

@@ -1,14 +1,24 @@
-from forest_fire2.firefighter import FireFighter
 from mesa import Model, Agent
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
 
 from .tree import Tree
+from .firefighter import FireFighter
 
 class ForestFire(Model):
 
     def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob, max_hp):
+        """
+        Create a forest fire ABM model.
+
+        :param height: Height of the grid.
+        :param width: Width of the the grid.
+        :parm density_trees: The density of trees on the grid.
+        :param max_burn_rate: The maximum speed on which a tree burns.
+        :param ignition_prob: The probability that a tree ignites when a neighbour is on fire.
+        :param max_hp: The maximum hp of a tree.
+        """
         super().__init__()
 
         self.height = height
@@ -40,7 +50,9 @@ class ForestFire(Model):
         self.running = True
 
     def _init_trees(self):
-
+        """
+        Init trees on every coordinate under a certain probability. 
+        """
         for (_, x, y) in self.grid.coord_iter():
             if self.random.random() < self.density_trees:
 
@@ -48,15 +60,20 @@ class ForestFire(Model):
                 self.grid._place_agent((x,y), new_tree)
                 self.trees.append(new_tree)
                 self.schedule_Tree.add(new_tree)
-        print('Done')
+        print('Done planting trees')
 
     def _init_fire(self):
+        """
+        Init a fire on a random spot on the field.
+        """
         tree = self.random.choice(self.trees)
         print(tree.unique_id, tree.pos)
         tree._ignite(start=True)
 
     def _init_firefighter(self, N=100):
-        
+        """
+        Init firefighters on the grid. Randomly or on a line.
+        """
         for _ in range(N):
             # x, y = self.random.randint(0, self.height - 1), self.random.randint(0, self.width -1)
             x, y = 3, self.random.randint(0, self.width -1)
@@ -66,6 +83,9 @@ class ForestFire(Model):
             self.schedule_FireFighter.add(firefighter)
 
     def step(self):
+        """
+        Method to move one step forward. 
+        """
 
         self.schedule_Tree.step()
         self.schedule_FireFighter.step()
