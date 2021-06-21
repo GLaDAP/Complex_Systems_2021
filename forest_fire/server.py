@@ -60,7 +60,8 @@ model_parameters = {
     'ignition_prob': UserSettableParameter("slider", "Ingnition probability", CONFIG['model']['ignition_prob'], 0.01, 1.0, 0.01),
     'max_hp': UserSettableParameter("slider", "Max HP", CONFIG['agents']['tree']['max_hp'], 1, 100, 1),
     'max_iter': 1000,
-    'regrowth_rate': UserSettableParameter('slider', 'Regrowth Rate', CONFIG['model']['regrowth_rate'], 5, 1000, 5)
+    'regrowth_rate': UserSettableParameter('slider', 'Regrowth Rate', CONFIG['model']['regrowth_rate'], 5, 50, 5),
+    'N_firefighters': UserSettableParameter('slider', 'N Firefighters', CONFIG['model']['N_firefighters'], 10, 1000, 10)
 }
 
 # Start the server

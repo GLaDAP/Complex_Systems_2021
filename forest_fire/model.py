@@ -8,7 +8,8 @@ from .firefighter import FireFighter
 
 class ForestFire(Model):
 
-    def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob, max_hp, max_iter, regrowth_rate):
+    def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob, 
+                 max_hp, max_iter, regrowth_rate, N_firefighters):
         """
         Create a forest fire ABM model.
 
@@ -37,6 +38,7 @@ class ForestFire(Model):
         self.ignition_prob = ignition_prob
         self.max_hp = max_hp
         self.regrowth_rate = regrowth_rate
+        self.N_firefighters = N_firefighters
 
         self.max_iter = max_iter
 
@@ -50,7 +52,7 @@ class ForestFire(Model):
         )
         self._init_trees()
         self._init_fire()
-        self._init_firefighter()
+        self._init_firefighters()
 
         self.running = True
 
@@ -74,13 +76,13 @@ class ForestFire(Model):
         tree = self.random.choice(self.trees)
         tree._ignite(start=True)
 
-    def _init_firefighter(self, N=100):
+    def _init_firefighters(self):
         """
         Init firefighters on the grid. Randomly or on a line.
         """
-        for _ in range(N):
+        for _ in range(self.N_firefighters):
             # x, y = self.random.randint(0, self.height - 1), self.random.randint(0, self.width -1)
-            x, y = 3, self.random.randint(0, self.width -1)
+            x, y = self.random.randint(0, self.height-1), self.random.randint(0, self.width -1)
             firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20)
             self.grid._place_agent((x,y), firefighter)
             self.firefighters.append(firefighter)
