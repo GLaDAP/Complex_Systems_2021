@@ -1,15 +1,15 @@
-from forest_fire2.firefighter import FireFighter
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
 from .model import ForestFire
 from .tree import Tree
+from .firefighter import FireFighter
 
 from colour import Color
 import json
 
-with open('forest_fire2/config.json') as json_file:
+with open('forest_fire/config.json') as json_file:
     CONFIG = json.load(json_file)
     COLOUR_HP = [_.hex for _ in list(Color(CONFIG['model']['colors']['Burned']).range_to(Color(CONFIG['model']['colors']['On fire']), 101))]
     json_file.close()
