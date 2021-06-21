@@ -47,17 +47,23 @@ canvas_element = CanvasGrid(model_portrayal,
                             CONFIG['grid']['height'], 
                             500, 500)
 
+tree_chart = ChartModule(
+    [{"Label": label, "Color": color} for (label, color) in CONFIG['agents']['tree']['colors'].items()]
+)
+
 # Parameters for the forest_fire model
 model_parameters = {
     'width': CONFIG['grid']['width'],
     'height': CONFIG['grid']['height'],
-    'density_trees': CONFIG['model']['density_trees'],
-    'max_burn_rate': CONFIG['model']['max_burn_rate'],
-    'ignition_prob': CONFIG['model']['ignition_prob'],
-    'max_hp': CONFIG['agents']['tree']['max_hp']
+    'density_trees': UserSettableParameter("slider", "Tree density", CONFIG['model']['density_trees'], 0.01, 1.0, 0.01),
+    'max_burn_rate': UserSettableParameter("slider", "Max burnrate", CONFIG['model']['max_burn_rate'], 1, 100, 1),
+    'ignition_prob': UserSettableParameter("slider", "Ingnition probability", CONFIG['model']['ignition_prob'], 0.01, 1.0, 0.01),
+    'max_hp': UserSettableParameter("slider", "Max HP", CONFIG['agents']['tree']['max_hp'], 1, 100, 1),
+    'max_iter': 1000,
+    'regrowth_rate': UserSettableParameter('slider', 'Regrowth Rate', CONFIG['model']['regrowth_rate'], 5, 1000, 5)
 }
 
 # Start the server
-server = ModularServer(ForestFire, [canvas_element], "Forest Fire", model_parameters)
+server = ModularServer(ForestFire, [canvas_element, tree_chart], "Forest Fire", model_parameters)
 
 

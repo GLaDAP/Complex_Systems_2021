@@ -6,7 +6,7 @@ DESCRIPTION: FireFighter class with functions to extinguish fires.
              This class inherits the walker class.
 """
 from .tree import Tree
-from .walker import Walker
+from .Walker import Walker
 
 class FireFighter(Walker):
     """
