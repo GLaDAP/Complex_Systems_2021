@@ -1,59 +1,63 @@
-import forest_fire
-from forest_fire.firefighter import FireFighter
-from mesa.visualization.modules import CanvasGrid, ChartModule, PieChartModule
+from forest_fire2.firefighter import FireFighter
+from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
 
 from .model import ForestFire
+from .tree import Tree
 
-from forest_fire.tree import Tree
-from forest_fire.Walker import Walker
+from colour import Color
+import json
 
-COLORS = {"Fine": "#00AA00", 
-          "On Fire": "#880000", 
-          "Burned Out": "#000000",
-          "FireFighter": "blue"}
+with open('forest_fire2/config.json') as json_file:
+    CONFIG = json.load(json_file)
+    COLOUR_HP = [_.hex for _ in list(Color(CONFIG['model']['colors']['Burned']).range_to(Color(CONFIG['model']['colors']['On fire']), 101))]
+    json_file.close()
 
+def model_portrayal(agent):
+    """
+    Function for portraying the information of the model on a grid.
 
-def forest_fire_portrayal(agent):
+    :param agent: Agent which can be either a tree or a firefighter.
+    """
 
-    # if empty
-    if agent is None:
-        return
-    elif isinstance(agent, Tree):
+    if isinstance(agent, Tree):
         portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-        (x, y) = agent.pos
-        portrayal["x"] = x
+        (x, y) = agent._get_pos()
+        portrayal["x"] = x 
         portrayal["y"] = y
-        portrayal["Color"] = COLORS[agent.condition]
+
+        if agent.condition == 'On fire':
+            portrayal["Color"] = COLOUR_HP[agent.hp]
+        else:    
+            portrayal["Color"] = CONFIG['model']['colors'][agent.condition]
         return portrayal
+
     elif isinstance(agent, FireFighter):
-        portrayal = {"Shape": "rect", "w": 1, "h": 1, "Filled": "true", "Layer": 0}
-        (x, y) = agent.pos
-        portrayal["x"] = x
+        portrayal = {"Shape": 'circle', 'r': 0.9, 'Filled': 'true', 'Layer': 1}
+        (x, y) = agent._get_pos()
+        portrayal["x"] = x 
         portrayal["y"] = y
-        portrayal["Color"] = COLORS["FireFighter"]
+        portrayal["Color"] = CONFIG['model']['colors']['FireFighter']
         return portrayal
 
+# The grid
+canvas_element = CanvasGrid(model_portrayal, 
+                            CONFIG['grid']['width'], 
+                            CONFIG['grid']['height'], 
+                            500, 500)
 
-canvas_element = CanvasGrid(forest_fire_portrayal, 128, 128, 512, 512)
-tree_chart = ChartModule(
-    [{"Label": label, "Color": color} for (label, color) in COLORS.items()]
-)
-pie_chart = PieChartModule(
-    [{"Label": label, "Color": color} for (label, color) in COLORS.items()]
-)
-
-model_params = {
-    "height": 128,
-    "width": 128,
-    "density_trees": UserSettableParameter("slider", "Tree density", 0.65, 0.01, 1.0, 0.01),
-    "growth_rate": UserSettableParameter("slider", "Growth rate", 10, 0, 25, 5),
-    "burn_rate": UserSettableParameter("slider", "Burn rate", 10, 0, 50, 5),
-    "ignition_threshold": UserSettableParameter("slider", "Ignition threshold", 5, 0, 50, 5),
-    "new_trees_per_step": UserSettableParameter("slider", "New trees per step", 100, 0, 1000, 25),
-    "initial_fire_size": UserSettableParameter("slider", "Initial Fire size", 5, 1, 50, 1)
+# Parameters for the forest_fire model
+model_parameters = {
+    'width': CONFIG['grid']['width'],
+    'height': CONFIG['grid']['height'],
+    'density_trees': CONFIG['model']['density_trees'],
+    'max_burn_rate': CONFIG['model']['max_burn_rate'],
+    'ignition_prob': CONFIG['model']['ignition_prob'],
+    'max_hp': CONFIG['agents']['tree']['max_hp']
 }
-server = ModularServer(
-    ForestFire, [canvas_element, tree_chart, pie_chart], "Forest Fire", model_params
-)
+
+# Start the server
+server = ModularServer(ForestFire, [canvas_element], "Forest Fire", model_parameters)
+
+
