@@ -58,8 +58,8 @@ class Walker(Agent):
         neighbouring_trees = [agent for agent in neighbours if isinstance(agent, Tree)]
         burning_trees = [tree for tree in neighbouring_trees if tree.condition == 'On fire']
         if len(burning_trees) > 0:
-            ordered_trees = self.__get_closest_tree(burning_trees)
-            self.model.grid.move_agent(self, ordered_trees[1].pos)
+            closest_index = self.__get_closest_tree(burning_trees)
+            self.model.grid.move_agent(self, burning_trees[closest_index].pos)
         else:
             self.random_move()
 
@@ -81,34 +81,22 @@ class Walker(Agent):
         neighbouring_trees = [agent for agent in neighbours if isinstance(agent, Tree)]
         burning_trees = [tree for tree in neighbouring_trees if tree.condition == 'On fire']
         if len(burning_trees) > 0:
-            max_index = self.__get_most_burning_tree(burning_trees)
-            self.model.grid.move_agent(self, burning_trees[max_index].pos)
+            biggest_index = self.__get_most_burning_tree(burning_trees)
+            self.model.grid.move_agent(self, burning_trees[biggest_index].pos)
         else:
             self.random_move()
 
     def __get_closest_tree(self, trees):
         """
-        Select the closest tree
+        Select the index of closest tree
 
         Attributes:
             trees: list of agents to detect which is closest
         Returns:
-            Ordered list of closest objects
+            Index of closest tree
         """
-        heap = []
-        [
-            heapq.heappush(
-                heap,
-                (
-                    (
-                        abs(self.pos[0] - tree.pos[0]),
-                        abs(self.pos[1] - tree.pos[1])
-                    ), 
-                    tree
-                )
-            ) for tree in trees
-        ]
-        return heapq.heappop(heap)
+        distances = [(abs(self.pos[0] - tree.pos[0])+abs(self.pos[1] - tree.pos[1])) for tree in trees]
+        return distances.index(min(distances))
 
 
     def __get_most_burning_tree(self, trees):
@@ -118,23 +106,10 @@ class Walker(Agent):
         Attributes:
             trees: list of agents to detect which is most burning
         Returns:
-            List of objects sorted by burn rate
+            Index of tree with highest burn rate
         """
         burn_rates = [tree.burn_rate for tree in trees]
         return burn_rates.index(max(burn_rates))
-        # heap = []
-        # [
-        #     heapq.heappush(
-        #         heap,
-        #         (
-        #             (
-        #                 tree.burn_rate
-        #             ),
-        #             tree
-        #         )
-        #     ) for tree in trees
-        # ]
-        # return heapq.heappop(heap)
 
     def __check_possible_moves(self):
 

@@ -77,7 +77,7 @@ class ForestFire(Model):
         for _ in range(N):
             # x, y = self.random.randint(0, self.height - 1), self.random.randint(0, self.width -1)
             x, y = 3, self.random.randint(0, self.width -1)
-            firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20, strategy='biggest')
+            firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20, strategy='closest')
             self.grid._place_agent((x,y), firefighter)
             self.firefighters.append(firefighter)
             self.schedule_FireFighter.add(firefighter)
