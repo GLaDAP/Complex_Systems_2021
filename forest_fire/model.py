@@ -2,6 +2,7 @@ from mesa import Model, Agent
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
+from numpy.core import numeric
 
 from .tree import Tree
 from .firefighter import FireFighter
@@ -124,18 +125,21 @@ class ForestFire(Model):
             df = self.datacollector.get_model_vars_dataframe()
             df.to_csv('report.csv')
             self.running = False
+        print(self.get_statistics())
 
-    def get_total_fires(self):
+    def get_fire_areas(self):
         # Convert to numeric representation:
         numeric_grid = self.get_numeric_representation_of_grid()
-        _, numobjects = ndimage.label(numeric_grid)
-        return numobjects
+        print(np.sum(numeric_grid))
+        labels, _ = ndimage.label(numeric_grid)
+        surface_areas = np.bincount(labels.flat)[1:]
+        return surface_areas
 
     def get_numeric_representation_of_grid(self):
-        numeric_grid = np.zeros((self.width, self.height))
-        trees = [agent for agent in self.model.schedule_Tree.agents if isinstance(agent, Tree)]
+        numeric_grid = np.zeros((self.width, self.height), dtype=np.int8)
+        trees = [agent for agent in self.schedule_Tree.agents if isinstance(agent, Tree)]
         for tree in trees:
-            if (tree.condition == "On Fire"):
+            if (tree.condition == "On fire"):
                 numeric_grid[tree.pos] = 1
         return numeric_grid
 
@@ -147,17 +151,21 @@ class ForestFire(Model):
         - Nf are the number of fires
         - Ns the time steps
         """
-        trees_on_fire = self.count_type(self.model, "On fire")
+        trees_on_fire = self.count_type(self, "On fire")
         total_area = self.width * self.height
         percentage_on_fire = trees_on_fire / total_area
         n_s = self.current_step
-        n_f = self.get_total_fires()
+        fire_areas = self.get_fire_areas()
         return {
-            "Nf": n_f,
+            "Nf": len(fire_areas),
             "Ns": n_s,
             "percentage_on_fire": percentage_on_fire,
             "trees_on_fire": trees_on_fire,
-            "total_area": total_area
+            "total_area": total_area,
+            "min_fire_area": np.min(fire_areas),
+            "max_fire_area": np.max(fire_areas),
+            "median_fire_area": np.median(fire_areas),
+            "mean_fire_area": np.mean(fire_areas)
         }
 
     @staticmethod
