@@ -8,7 +8,7 @@ DESCRIPTION: Walker class, with functions to move agents in a certain manner:
                 - organized << is not yet implemented
 """
 
-from forest_fire.tree import Tree
+from .tree import Tree
 from mesa import Agent
 import heapq
 
@@ -25,7 +25,7 @@ class Walker(Agent):
     practice to give one to each agent anyway.
     """
 
-    def __init__(self, unique_id, pos, model, moore=False):
+    def __init__(self, unique_id, pos, model, moore=True):
         """
         Initialize Walker class
         """
@@ -37,12 +37,7 @@ class Walker(Agent):
         """
         Method for randomly moving the agent over the grid
         """
-        possible_moves = self.model.grid.get_neighborhood(
-            pos = self.pos,
-            moore = self.moore,
-            include_center = False
-        )
-        move = self.random.choice(possible_moves)
+        move = self.random.choice(self.__check_possible_moves())
         self.model.grid.move_agent(self, move)
 
     def move_towards_closest_fire(self, radius=5):
@@ -91,5 +86,23 @@ class Walker(Agent):
             ) for tree in trees
         ]
         return heapq.heappop(heap)
+
+    def __check_possible_moves(self):
+
+        coords = self.model.grid.get_neighborhood(
+            pos = self.pos,
+            moore = self.moore,
+            include_center = True
+        )
+        possible_moves = []
+        for coord in coords:
+            tree = [agent for agent in self.model.grid.get_cell_list_contents(coord) if isinstance(agent, Tree)]
+            if len(tree) == 0:
+                possible_moves.append(coord)
+            elif tree[0].condition != 'On fire':
+                possible_moves.append(coord)
+
+        return possible_moves
+
 
 

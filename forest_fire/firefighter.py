@@ -5,8 +5,8 @@ AUTHOR(S):   Sam Kuilboer
 DESCRIPTION: FireFighter class with functions to extinguish fires. 
              This class inherits the walker class.
 """
-from forest_fire.tree import Tree
-from forest_fire.Walker import Walker
+from .tree import Tree
+from .Walker import Walker
 
 class FireFighter(Walker):
     """
@@ -25,6 +25,9 @@ class FireFighter(Walker):
         self.extg_strength = extg_strength
         self.fires_extg = 0
 
+    def _get_pos(self):
+        return self.pos
+
     def step(self):
         """
         If the firefighter is near a fire it will try to extinguish it,
@@ -41,8 +44,8 @@ class FireFighter(Walker):
 
         if len(burning_trees) > 0:
             burning_tree = self.random.choice(burning_trees)
-            burning_tree.extinguish(self.extg_strength)
+            burning_tree._extinguish(firefighter=self)
             self.fires_extg += 1
-        
-        self.random_move()
+        else:
+            self.random_move()
 
