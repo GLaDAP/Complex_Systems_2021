@@ -130,7 +130,6 @@ class ForestFire(Model):
     def get_fire_areas(self):
         # Convert to numeric representation:
         numeric_grid = self.get_numeric_representation_of_grid()
-        print(np.sum(numeric_grid))
         labels, _ = ndimage.label(numeric_grid)
         surface_areas = np.bincount(labels.flat)[1:]
         return surface_areas
