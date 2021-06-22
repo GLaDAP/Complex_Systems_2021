@@ -8,7 +8,8 @@ from .firefighter import FireFighter
 
 class ForestFire(Model):
 
-    def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob, max_hp):
+    def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob,
+                 max_hp, max_iter, regrowth_rate, N_firefighters):
         """
         Create a forest fire ABM model.
 
@@ -23,6 +24,7 @@ class ForestFire(Model):
 
         self.height = height
         self.width = width
+        self.current_step = 0
 
         self.grid = MultiGrid(height, width, torus=False)
         self.trees = []
@@ -35,17 +37,22 @@ class ForestFire(Model):
         self.max_burn_rate = max_burn_rate
         self.ignition_prob = ignition_prob
         self.max_hp = max_hp
+        self.regrowth_rate = regrowth_rate
+        self.N_firefighters = N_firefighters
+
+        self.max_iter = max_iter
 
         self.datacollector = DataCollector(
             {
+                "Density Trees": lambda m: len(m.trees)/(self.width * self.height),
                 "Fine": lambda m: self.count_type(m, "Fine"),
-                "On Fire": lambda m: self.count_type(m, "On fire"),
+                "On fire": lambda m: self.count_type(m, "On fire"),
                 "Burned": lambda m: self.count_type(m, "Burned")
             }
         )
         self._init_trees()
         self._init_fire()
-        self._init_firefighter()
+        self._init_firefighters()
 
         self.running = True
 
@@ -67,32 +74,50 @@ class ForestFire(Model):
         Init a fire on a random spot on the field.
         """
         tree = self.random.choice(self.trees)
-        print(tree.unique_id, tree.pos)
         tree._ignite(start=True)
 
-    def _init_firefighter(self, N=100):
+    def _init_firefighters(self):
         """
         Init firefighters on the grid. Randomly or on a line.
         """
-        for _ in range(N):
+        for _ in range(self.N_firefighters):
             # x, y = self.random.randint(0, self.height - 1), self.random.randint(0, self.width -1)
-            x, y = 3, self.random.randint(0, self.width -1)
+            x, y = self.random.randint(0, self.height-1), self.random.randint(0, self.width -1)
             firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20, strategy='closest')
             self.grid._place_agent((x,y), firefighter)
             self.firefighters.append(firefighter)
             self.schedule_FireFighter.add(firefighter)
 
+    def plant_new_trees(self, regrowth_rate):
+        """
+        At every time step, plant an random amount of new trees.
+        """
+        for _ in range(regrowth_rate):
+            # if self.grid.exists_empty_cells == True:
+            random_coord = self.grid.find_empty()
+            if random_coord is not None:
+                new_tree = Tree(self.next_id(),
+                                random_coord,
+                                self)
+                self.grid._place_agent(random_coord, new_tree)
+                self.trees.append(new_tree)
+                self.schedule_Tree.add(new_tree)
+
     def step(self):
         """
         Method to move one step forward. 
         """
-
+        self.current_step += 1
         self.schedule_Tree.step()
         self.schedule_FireFighter.step()
 
+        self.plant_new_trees(self.regrowth_rate)
+
         self.datacollector.collect(self)
         
-        if self.count_type(self, 'On fire') == 0:
+        if (self.current_step > self.max_iter) or self.count_type(self, 'On fire') == 0:
+            df = self.datacollector.get_model_vars_dataframe()
+            df.to_csv('report.csv')
             self.running = False
 
     @staticmethod

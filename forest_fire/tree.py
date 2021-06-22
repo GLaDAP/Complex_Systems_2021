@@ -43,6 +43,14 @@ class Tree(Agent):
         if self.burn_rate <= 0:
             self.burn_rate = 0
             self.condition = 'Fine'
+    
+    def _killed(self):
+        """
+        Remove burned trees from the grid.
+        """
+        self.model.grid._remove_agent(self.pos, self)
+        self.model.schedule_Tree.remove(self)
+        self.model.trees.remove(self)
 
     def _get_pos(self):
         """
@@ -55,6 +63,9 @@ class Tree(Agent):
         Method for proceeding one step in the model. 
         """
 
+        # If burned, remove from the grid
+        if self.condition == "Burned":
+            self._killed()
 
         # if on fire
         if self.condition == "On fire":
