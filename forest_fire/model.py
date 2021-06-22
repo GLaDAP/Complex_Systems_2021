@@ -1,3 +1,4 @@
+import time
 from mesa import Model, Agent
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
@@ -53,7 +54,8 @@ class ForestFire(Model):
         )
         self._init_trees()
         self._init_fire()
-        self._init_firefighters()
+        if self.strategy != "no_fighters":
+            self._init_firefighters()
 
         self.running = True
 
@@ -110,7 +112,8 @@ class ForestFire(Model):
         """
         self.current_step += 1
         self.schedule_Tree.step()
-        self.schedule_FireFighter.step()
+        if self.strategy != "no_fighters":
+            self.schedule_FireFighter.step()
 
         self.plant_new_trees(self.regrowth_rate)
 
@@ -118,7 +121,8 @@ class ForestFire(Model):
         
         if (self.current_step > self.max_iter) or self.count_type(self, 'On fire') == 0:
             df = self.datacollector.get_model_vars_dataframe()
-            df.to_csv('report.csv')
+            datestring = time.ctime()[4:7]+'-'+time.ctime()[8:10]+'-'+time.ctime()[11:16]
+            df.to_csv('{}-report-{}.csv'.format(datestring,self.strategy)) ### This gives an error, can u check?
             self.running = False
 
     @staticmethod
