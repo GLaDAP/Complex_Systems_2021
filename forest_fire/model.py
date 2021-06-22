@@ -9,7 +9,7 @@ from .firefighter import FireFighter
 class ForestFire(Model):
 
     def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob,
-                 max_hp, max_iter, regrowth_rate, N_firefighters):
+                 max_hp, max_iter, regrowth_rate, N_firefighters,strategy):
         """
         Create a forest fire ABM model.
 
@@ -39,6 +39,7 @@ class ForestFire(Model):
         self.max_hp = max_hp
         self.regrowth_rate = regrowth_rate
         self.N_firefighters = N_firefighters
+        self.strategy = strategy
 
         self.max_iter = max_iter
 
@@ -83,7 +84,7 @@ class ForestFire(Model):
         for _ in range(self.N_firefighters):
             # x, y = self.random.randint(0, self.height - 1), self.random.randint(0, self.width -1)
             x, y = self.random.randint(0, self.height-1), self.random.randint(0, self.width -1)
-            firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20, strategy='closest')
+            firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20, strategy=self.strategy)
             self.grid._place_agent((x,y), firefighter)
             self.firefighters.append(firefighter)
             self.schedule_FireFighter.add(firefighter)

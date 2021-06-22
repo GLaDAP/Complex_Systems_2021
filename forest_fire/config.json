@@ -26,6 +26,9 @@
                 "Burned": "black",
                 "Fine": "green"
             }
-        }  
+        },
+        "fighter": {
+            "strategy": "random"
+        }
+        }
     }
-}

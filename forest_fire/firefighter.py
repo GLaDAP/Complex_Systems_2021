@@ -51,6 +51,8 @@ class FireFighter(Walker):
             self.move_towards_closest_fire()
         elif self.strategy == 'biggest':
             self.move_towards_biggest_fire()
+        elif self.strategy == 'call_plance':
+            self.move_towards_biggest_fire()
         else:
             self.random_move()
 
