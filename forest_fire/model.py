@@ -6,6 +6,10 @@ from mesa.datacollection import DataCollector
 from .tree import Tree
 from .firefighter import FireFighter
 
+import numpy as np
+from scipy import ndimage
+
+
 class ForestFire(Model):
 
     def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob,
@@ -120,6 +124,41 @@ class ForestFire(Model):
             df = self.datacollector.get_model_vars_dataframe()
             df.to_csv('report.csv')
             self.running = False
+
+    def get_total_fires(self):
+        # Convert to numeric representation:
+        numeric_grid = self.get_numeric_representation_of_grid()
+        _, numobjects = ndimage.label(numeric_grid)
+        return numobjects
+
+    def get_numeric_representation_of_grid(self):
+        numeric_grid = np.zeros((self.width, self.height))
+        trees = [agent for agent in self.model.schedule_Tree.agents if isinstance(agent, Tree)]
+        for tree in trees:
+            if (tree.condition == "On Fire"):
+                numeric_grid[tree.pos] = 1
+        return numeric_grid
+
+    def get_statistics(self):
+        """
+        Get burned area
+        Parameters to collect:
+        - AF: Number of trees burned in each fire
+        - Nf are the number of fires
+        - Ns the time steps
+        """
+        trees_on_fire = self.count_type(self.model, "On fire")
+        total_area = self.width * self.height
+        percentage_on_fire = trees_on_fire / total_area
+        n_s = self.current_step
+        n_f = self.get_total_fires()
+        return {
+            "Nf": n_f,
+            "Ns": n_s,
+            "percentage_on_fire": percentage_on_fire,
+            "trees_on_fire": trees_on_fire,
+            "total_area": total_area
+        }
 
     @staticmethod
     def count_type(model, tree_condition):
