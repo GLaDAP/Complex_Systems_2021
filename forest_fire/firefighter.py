@@ -20,10 +20,11 @@ class FireFighter(Walker):
         extg_strength: int within range [0, 100]
     """
 
-    def __init__(self, unique_id, pos, model, extg_strength):
+    def __init__(self, unique_id, pos, model, extg_strength,strategy):
         super().__init__(unique_id, pos, model)
         self.extg_strength = extg_strength
         self.fires_extg = 0
+        self.strategy = strategy
 
     def _get_pos(self):
         return self.pos
@@ -46,6 +47,10 @@ class FireFighter(Walker):
             burning_tree = self.random.choice(burning_trees)
             burning_tree._extinguish(firefighter=self)
             self.fires_extg += 1
+        elif self.strategy == 'closest':
+            self.move_towards_closest_fire()
+        elif self.strategy == 'biggest':
+            self.move_towards_biggest_fire()
         else:
             self.random_move()
 

@@ -8,7 +8,7 @@ from .firefighter import FireFighter
 
 class ForestFire(Model):
 
-    def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob, 
+    def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob,
                  max_hp, max_iter, regrowth_rate, N_firefighters):
         """
         Create a forest fire ABM model.
@@ -83,7 +83,7 @@ class ForestFire(Model):
         for _ in range(self.N_firefighters):
             # x, y = self.random.randint(0, self.height - 1), self.random.randint(0, self.width -1)
             x, y = self.random.randint(0, self.height-1), self.random.randint(0, self.width -1)
-            firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20)
+            firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20, strategy='closest')
             self.grid._place_agent((x,y), firefighter)
             self.firefighters.append(firefighter)
             self.schedule_FireFighter.add(firefighter)
@@ -96,8 +96,8 @@ class ForestFire(Model):
             # if self.grid.exists_empty_cells == True:
             random_coord = self.grid.find_empty()
             if random_coord is not None:
-                new_tree = Tree(self.next_id(), 
-                                random_coord, 
+                new_tree = Tree(self.next_id(),
+                                random_coord,
                                 self)
                 self.grid._place_agent(random_coord, new_tree)
                 self.trees.append(new_tree)
@@ -113,7 +113,7 @@ class ForestFire(Model):
 
         self.plant_new_trees(self.regrowth_rate)
 
-        self.datacollector.collect(self)          
+        self.datacollector.collect(self)
         
         if (self.current_step > self.max_iter) or self.count_type(self, 'On fire') == 0:
             df = self.datacollector.get_model_vars_dataframe()
