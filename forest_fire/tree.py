@@ -38,8 +38,10 @@ class Tree(Agent):
         :param firefighter: The firefighter which is currently extinghuising 
                             the tree.
         """
-        
-        self.burn_rate -= firefighter.extg_strength
+        if firefighter.strategy != 'call_plane':
+            self.burn_rate -= firefighter.extg_strength
+        else:
+            self.burn_rate -= firefighter.extg_strength*5
         if self.burn_rate <= 0:
             self.burn_rate = 0
             self.condition = 'Fine'
