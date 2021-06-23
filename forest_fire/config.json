@@ -7,9 +7,9 @@
         "max_iter":1000,
         "N_firefighters": 100,
         "density_trees": 0.9,
-        "max_burn_rate": 5,
+        "max_burn_rate": 10,
         "ignition_prob": 0.5,
-        "regrowth_rate": 20,
+        "regrowth_rate": 30,
         "colors": {
             "On fire": "red",
             "Burned": "black",
@@ -28,7 +28,7 @@
             }
         },
         "fighter": {
-            "strategy": "random"
+            "strategy": "no_fighters"
         }
         }
     }

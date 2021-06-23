@@ -8,6 +8,7 @@ from .firefighter import FireFighter
 
 import numpy as np
 from scipy import ndimage
+import time, os
 
 
 class ForestFire(Model):
@@ -57,7 +58,8 @@ class ForestFire(Model):
         )
         self._init_trees()
         self._init_fire()
-        self._init_firefighters()
+        if self.strategy != "no_fighters":
+            self._init_firefighters()
 
         self.running = True
 
@@ -114,16 +116,21 @@ class ForestFire(Model):
         """
         self.current_step += 1
         self.schedule_Tree.step()
-        self.schedule_FireFighter.step()
+        if self.strategy != "no_fighters":
+            self.schedule_FireFighter.step()
 
         self.plant_new_trees(self.regrowth_rate)
 
         self.datacollector.collect(self)
         
         if (self.current_step > self.max_iter) or self.count_type(self, 'On fire') == 0:
-            df = self.datacollector.get_model_vars_dataframe()
-            df.to_csv('report.csv')
+        #     df = self.get_statistics()
+        #     datestring = time.ctime()[4:7] + '-' + time.ctime()[8:10] + '-' + time.ctime()[11:16]
+        #     directory = os.getcwd()
+        #     df.to_csv(r'{}\\{}-report-{}.csv'.format(directory, datestring,
+        #                                            self.strategy))  ### This gives an error, can u check?
             self.running = False
+        return self.get_statistics()
 
     def get_total_fires(self):
         # Convert to numeric representation:
