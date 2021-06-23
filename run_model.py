@@ -29,7 +29,8 @@ if __name__ == "__main__":
         max_iter = max_steps,
         regrowth_rate = CONFIG['model']['regrowth_rate'],
         N_firefighters = CONFIG['model']['N_firefighters'],
-        strategy = CONFIG['agents']['fighter']['strategy']#, choices=['no_fighters','random', 'closest', 'biggest', 'call_plane'])
+        strategy = CONFIG['agents']['fighter']['strategy'],
+        extg_strength = CONFIG['agents']['fighter']['extg_strength']#, choices=['no_fighters','random', 'closest', 'biggest', 'call_plane'])
     )
 
     while max_steps > 0:

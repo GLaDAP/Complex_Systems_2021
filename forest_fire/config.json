@@ -28,7 +28,8 @@
             }
         },
         "fighter": {
-            "strategy": "no_fighters"
+            "strategy": "no_fighters",
+            "extg_strength": 20
         }
         }
     }
