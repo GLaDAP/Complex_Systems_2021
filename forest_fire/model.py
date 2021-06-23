@@ -1,14 +1,15 @@
+import time
 from mesa import Model, Agent
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
 from mesa.datacollection import DataCollector
+from numpy.core import numeric
 
 from .tree import Tree
 from .firefighter import FireFighter
 
 import numpy as np
 from scipy import ndimage
-import time, os
 
 
 class ForestFire(Model):
@@ -53,7 +54,17 @@ class ForestFire(Model):
                 "Density Trees": lambda m: len(m.trees)/(self.width * self.height),
                 "Fine": lambda m: self.count_type(m, "Fine"),
                 "On fire": lambda m: self.count_type(m, "On fire"),
-                "Burned": lambda m: self.count_type(m, "Burned")
+                "Burned": lambda m: self.count_type(m, "Burned"),
+                # # Using the model reporter is very inefficient. Maybe implement this in the step function
+                # # and keep it separate ?
+                # "Nf": len(self.get_fire_areas()),
+                # "Ns": self.current_step,
+                # "percentage_on_fire": lambda m: self.count_type(m, "On fire")/(self.width * self.height),
+                # "total_area": self.width * self.height,
+                # "min_fire_area": lambda m: np.min(self.get_fire_areas()),
+                # "max_fire_area": lambda m: np.max(self.get_fire_areas()),
+                # "median_fire_area": lambda m: np.median(self.get_fire_areas()),
+                # "mean_fire_area": lambda m: np.mean(self.get_fire_areas())
             }
         )
         self._init_trees()
@@ -124,25 +135,28 @@ class ForestFire(Model):
         self.datacollector.collect(self)
         
         if (self.current_step > self.max_iter) or self.count_type(self, 'On fire') == 0:
-        #     df = self.get_statistics()
-        #     datestring = time.ctime()[4:7] + '-' + time.ctime()[8:10] + '-' + time.ctime()[11:16]
-        #     directory = os.getcwd()
-        #     df.to_csv(r'{}\\{}-report-{}.csv'.format(directory, datestring,
-        #                                            self.strategy))  ### This gives an error, can u check?
+            # df = self.datacollector.get_model_vars_dataframe()
+            # datestring = time.ctime()[4:7]+'-'+time.ctime()[8:10]+'-'+time.ctime()[11:16]
+            # df.to_csv('{}-report-{}.csv'.format(datestring,self.strategy)) ### This gives an error, can u check?
             self.running = False
+
         return self.get_statistics()
 
-    def get_total_fires(self):
+    def get_fire_areas(self):
+        """
+        Calculates the fire areas.
+        """
         # Convert to numeric representation:
         numeric_grid = self.get_numeric_representation_of_grid()
-        _, numobjects = ndimage.label(numeric_grid)
-        return numobjects
+        labels, _ = ndimage.label(numeric_grid)
+        surface_areas = np.bincount(labels.flat)[1:]
+        return surface_areas
 
     def get_numeric_representation_of_grid(self):
-        numeric_grid = np.zeros((self.width, self.height))
-        trees = [agent for agent in self.model.schedule_Tree.agents if isinstance(agent, Tree)]
+        numeric_grid = np.zeros((self.width, self.height), dtype=np.int8)
+        trees = [agent for agent in self.schedule_Tree.agents if isinstance(agent, Tree)]
         for tree in trees:
-            if (tree.condition == "On Fire"):
+            if (tree.condition == "On fire"):
                 numeric_grid[tree.pos] = 1
         return numeric_grid
 
@@ -154,17 +168,24 @@ class ForestFire(Model):
         - Nf are the number of fires
         - Ns the time steps
         """
-        trees_on_fire = self.count_type(self.model, "On fire")
+        trees_on_fire = self.count_type(self, "On fire")
         total_area = self.width * self.height
         percentage_on_fire = trees_on_fire / total_area
         n_s = self.current_step
-        n_f = self.get_total_fires()
+        fire_areas = self.get_fire_areas()
         return {
-            "Nf": n_f,
+            "Nf": len(fire_areas),
             "Ns": n_s,
             "percentage_on_fire": percentage_on_fire,
             "trees_on_fire": trees_on_fire,
-            "total_area": total_area
+            "total_area": total_area,
+            "min_fire_area": np.min(fire_areas),
+            "max_fire_area": np.max(fire_areas),
+            "median_fire_area": np.median(fire_areas),
+            "mean_fire_area": np.mean(fire_areas),
+            "Density Trees": len(self.trees)/(self.width * self.height),
+            "Fine": self.count_type(self, "Fine"),
+            "On fire": trees_on_fire,
         }
 
     @staticmethod
