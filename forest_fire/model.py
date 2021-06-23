@@ -54,7 +54,17 @@ class ForestFire(Model):
                 "Density Trees": lambda m: len(m.trees)/(self.width * self.height),
                 "Fine": lambda m: self.count_type(m, "Fine"),
                 "On fire": lambda m: self.count_type(m, "On fire"),
-                "Burned": lambda m: self.count_type(m, "Burned")
+                "Burned": lambda m: self.count_type(m, "Burned"),
+                # # Using the model reporter is very inefficient. Maybe implement this in the step function
+                # # and keep it separate ?
+                # "Nf": len(self.get_fire_areas()),
+                # "Ns": self.current_step,
+                # "percentage_on_fire": lambda m: self.count_type(m, "On fire")/(self.width * self.height),
+                # "total_area": self.width * self.height,
+                # "min_fire_area": lambda m: np.min(self.get_fire_areas()),
+                # "max_fire_area": lambda m: np.max(self.get_fire_areas()),
+                # "median_fire_area": lambda m: np.median(self.get_fire_areas()),
+                # "mean_fire_area": lambda m: np.mean(self.get_fire_areas())
             }
         )
         self._init_trees()
@@ -129,9 +139,13 @@ class ForestFire(Model):
             datestring = time.ctime()[4:7]+'-'+time.ctime()[8:10]+'-'+time.ctime()[11:16]
             df.to_csv('{}-report-{}.csv'.format(datestring,self.strategy)) ### This gives an error, can u check?
             self.running = False
-        print(self.get_statistics())
+
+        return self.get_statistics()
 
     def get_fire_areas(self):
+        """
+        Calculates the fire areas.
+        """
         # Convert to numeric representation:
         numeric_grid = self.get_numeric_representation_of_grid()
         labels, _ = ndimage.label(numeric_grid)
@@ -168,7 +182,10 @@ class ForestFire(Model):
             "min_fire_area": np.min(fire_areas),
             "max_fire_area": np.max(fire_areas),
             "median_fire_area": np.median(fire_areas),
-            "mean_fire_area": np.mean(fire_areas)
+            "mean_fire_area": np.mean(fire_areas),
+            "Density Trees": len(self.trees)/(self.width * self.height),
+            "Fine": self.count_type(self, "Fine"),
+            "On fire": trees_on_fire,
         }
 
     @staticmethod
