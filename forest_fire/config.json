@@ -4,8 +4,8 @@
         "height": 100
     },
     "model": {
-        "max_iter":1000,
-        "N_firefighters": 100,
+        "max_iter":100,
+        "N_firefighters": 300,
         "density_trees": 0.9,
         "max_burn_rate": 10,
         "ignition_prob": 0.6,
@@ -28,7 +28,7 @@
             }
         },
         "fighter": {
-            "strategy": "no_fighters"
+            "strategy": "closest"
         }
         }
     }
