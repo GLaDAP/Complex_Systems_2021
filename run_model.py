@@ -3,12 +3,6 @@
 """
 import json
 import pandas as pd
-<<<<<<< HEAD
-import matplotlib.pyplot as plt
-import seaborn as sn
-
-=======
->>>>>>> fd2081f1b2374c3cf57bb53cc73f82bca7f03f8e
 from forest_fire.model import ForestFire
 import multiprocessing
 
