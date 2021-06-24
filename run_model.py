@@ -23,7 +23,8 @@ if __name__ == "__main__":
         height = CONFIG['grid']['height'],
         width = CONFIG['grid']['width'],
         density_trees = CONFIG['model']['density_trees'],
-        max_burn_rate = CONFIG['model']['max_burn_rate'],
+        max_burn_rate = CONFIG['model']['max_burn_rate'
+        ],
         ignition_prob = CONFIG['model']['ignition_prob'],
         max_hp = CONFIG['agents']['tree']['max_hp'],
         max_iter = max_steps,
