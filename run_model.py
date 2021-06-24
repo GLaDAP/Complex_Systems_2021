@@ -1,6 +1,3 @@
-"""
-
-"""
 import json
 import pandas as pd
 from forest_fire.model import ForestFire
@@ -9,8 +6,8 @@ import multiprocessing
 def calculate_model(config_tuple):
     strategy, max_steps, n_fighters,ext_strength, CONFIG = config_tuple
     model = ForestFire(
-        height = 128,
-        width = 128,
+        height = CONFIG['grid']['height'],
+        width = CONFIG['grid']['width'],
         density_trees = CONFIG['model']['density_trees'],
         max_burn_rate = CONFIG['model']['max_burn_rate'],
         ignition_prob = CONFIG['model']['ignition_prob'],
@@ -28,7 +25,6 @@ def calculate_model(config_tuple):
         max_steps -=1
     statistics_df = pd.DataFrame(model_reporting_dicts)
     statistics_df.to_csv(f'statistics_{strategy}_nfighters_{n_fighters}_ext_strength_{ext_strength}.csv')
-
     return 0
 
 if __name__ == "__main__":
