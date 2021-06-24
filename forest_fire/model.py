@@ -176,24 +176,16 @@ class ForestFire(Model):
         percentage_on_fire = trees_on_fire / total_area
         n_s = self.current_step
         fire_areas = self.get_fire_areas()
-        min_fire_area = 0
-        if len(fire_areas) > 0: min_fire_area = np.min(fire_areas)
-        max_fire_area = 0
-        if len(fire_areas) > 0: max_fire_area = np.max(fire_areas)
-        median_fire_area = 0
-        if len(fire_areas) > 0: median_fire_area = np.median(fire_areas)
-        mean_fire_area = 0
-        if len(fire_areas) > 0: mean_fire_area = np.mean(fire_areas)
         return {
             "Nf": len(fire_areas),
             "Ns": n_s,
             "percentage_on_fire": percentage_on_fire,
             "trees_on_fire": trees_on_fire,
             "total_area": total_area,
-            "min_fire_area": min_fire_area,
-            "max_fire_area": max_fire_area,
-            "median_fire_area": median_fire_area,
-            "mean_fire_area": mean_fire_area,
+            "min_fire_area": np.min(fire_areas) if len(fire_areas) > 0 else 0,
+            "max_fire_area": np.max(fire_areas) if len(fire_areas) > 0 else 0,
+            "median_fire_area": np.median(fire_areas) if len(fire_areas) > 0 else 0,
+            "mean_fire_area": np.mean(fire_areas) if len(fire_areas) > 0 else 0,
             "Density Trees": len(self.trees)/(self.width * self.height),
             "Fine": self.count_type(self, "Fine"),
             "On fire": trees_on_fire,
