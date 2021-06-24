@@ -1,7 +1,6 @@
 """
 
 """
-
 import json
 import pandas as pd
 from forest_fire.model import ForestFire

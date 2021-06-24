@@ -127,6 +127,8 @@ class ForestFire(Model):
         Method to move one step forward. 
         """
         self.current_step += 1
+        if (self.current_step % 1000 == 0):
+                print(self.current_step)
         self.schedule_Tree.step()
         if self.strategy != "no_fighters":
             self.schedule_FireFighter.step()
