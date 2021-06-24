@@ -15,7 +15,7 @@ from scipy import ndimage
 class ForestFire(Model):
 
     def __init__(self, height, width, density_trees, max_burn_rate, ignition_prob,
-                 max_hp, max_iter, regrowth_rate, N_firefighters,strategy):
+                 max_hp, max_iter, regrowth_rate, N_firefighters,strategy, extg_strength):
         """
         Create a forest fire ABM model.
 
@@ -46,6 +46,7 @@ class ForestFire(Model):
         self.regrowth_rate = regrowth_rate
         self.N_firefighters = N_firefighters
         self.strategy = strategy
+        self.extg_strength = extg_strength
 
         self.max_iter = max_iter
 
@@ -101,7 +102,7 @@ class ForestFire(Model):
         for _ in range(self.N_firefighters):
             # x, y = self.random.randint(0, self.height - 1), self.random.randint(0, self.width -1)
             x, y = self.random.randint(0, self.height-1), self.random.randint(0, self.width -1)
-            firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=20, strategy=self.strategy)
+            firefighter = FireFighter(self.next_id(), (x, y), self, extg_strength=self.extg_strength, strategy=self.strategy)
             self.grid._place_agent((x,y), firefighter)
             self.firefighters.append(firefighter)
             self.schedule_FireFighter.add(firefighter)
@@ -135,9 +136,9 @@ class ForestFire(Model):
         self.datacollector.collect(self)
         
         if (self.current_step > self.max_iter) or self.count_type(self, 'On fire') == 0:
-            df = self.datacollector.get_model_vars_dataframe()
-            datestring = time.ctime()[4:7]+'-'+time.ctime()[8:10]+'-'+time.ctime()[11:16]
-            df.to_csv('{}-report-{}.csv'.format(datestring,self.strategy)) ### This gives an error, can u check?
+            # df = self.datacollector.get_model_vars_dataframe()
+            # datestring = time.ctime()[4:7]+'-'+time.ctime()[8:10]+'-'+time.ctime()[11:16]
+            # df.to_csv('{}-report-{}.csv'.format(datestring,self.strategy)) ### This gives an error, can u check?
             self.running = False
 
         return self.get_statistics()
