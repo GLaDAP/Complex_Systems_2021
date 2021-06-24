@@ -15,8 +15,8 @@ if __name__ == "__main__":
         CONFIG = json.load(json_file)
         json_file.close()
 
-    for strategy in ['random', 'closest','biggest']:
-        for n_fighters in [100,300,500,700,900]:
+    for strategy in ['earliest']:
+        for n_fighters in [100]:
             for extg_strength in [10]:
                 start_time = time.time()
                 print(f'{strategy}_{n_fighters}_{extg_strength}')
