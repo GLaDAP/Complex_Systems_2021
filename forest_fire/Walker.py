@@ -86,6 +86,29 @@ class Walker(Agent):
         else:
             self.random_move()
 
+    def move_towards_hp_fire(self, radius=5):
+        """
+        The agent moves to the fire based on hp. If none is spotted it
+        moves to a random spot.
+
+        Attributes:
+            radius: int=5
+        """
+
+        neighbours = self.model.grid.get_neighbors(
+            pos = self.pos,
+            moore = True,
+            include_center = False,
+            radius = radius
+        )
+        neighbouring_trees = [agent for agent in neighbours if isinstance(agent, Tree)]
+        burning_trees = [tree for tree in neighbouring_trees if tree.condition == 'On fire']
+        if len(burning_trees) > 0:
+            hp_index = self.__get_most_hp_tree(burning_trees)
+            self.model.grid.move_agent(self, burning_trees[hp_index].pos)
+        else:
+            self.random_move()
+
     def __get_closest_tree(self, trees):
         """
         Select the index of closest tree
@@ -110,6 +133,18 @@ class Walker(Agent):
         """
         burn_rates = [tree.burn_rate for tree in trees]
         return burn_rates.index(max(burn_rates))
+
+    def __get_most_hp_tree(self, trees):
+        """
+        Select the tree with most HP
+
+        Attributes:
+            trees: list of agents to detect which has most hp left
+        Returns:
+            Index of tree with highest hp
+        """
+        hps = [tree.hp for tree in trees]
+        return hps.index(max(hps))
 
     def __check_possible_moves(self):
 
