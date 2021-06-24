@@ -1,0 +1,4 @@
+,Nf,Ns,percentage_on_fire,trees_on_fire,total_area,min_fire_area,max_fire_area,median_fire_area,mean_fire_area,Density Trees,Fine,On fire
+0,1,1,0.0002,2,10000,2,2,2.0,2.0,0.9004,9002,2
+1,2,2,0.0002,2,10000,1,1,1.0,1.0,0.9034,9032,2
+2,1,3,0.0001,1,10000,1,1,1.0,1.0,0.9064,9063,1
