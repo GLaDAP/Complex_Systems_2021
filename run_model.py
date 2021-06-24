@@ -15,9 +15,9 @@ if __name__ == "__main__":
         CONFIG = json.load(json_file)
         json_file.close()
 
-    for strategy in ['no_fighters','random', 'closest', 'biggest', 'call_plane']:
-        for n_fighters in [100]:
-            for extg_strength in [20]:
+    for strategy in ['random', 'closest','biggest']:
+        for n_fighters in [100,300,500,700,900]:
+            for extg_strength in [10]:
                 start_time = time.time()
                 print(f'{strategy}_{n_fighters}_{extg_strength}')
                 max_steps = 5000
