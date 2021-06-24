@@ -1,3 +1,7 @@
+"""
+
+"""
+import time
 import json
 import pandas as pd
 from forest_fire.model import ForestFire
@@ -40,12 +44,14 @@ if __name__ == "__main__":
             configuration_list.append(('random', max_steps, n_fighters, ext_strength, CONFIG))
             configuration_list.append(('closest', max_steps, n_fighters, ext_strength, CONFIG))
             configuration_list.append(('biggest', max_steps, n_fighters, ext_strength, CONFIG))
+            configuration_list.append(('earliest', max_steps, n_fighters, ext_strength, CONFIG))
 
     # 12 simulations
     for ext_strength in [2, 4, 6, 8]:
         configuration_list.append(('random', max_steps, 100, ext_strength, CONFIG))
         configuration_list.append(('closest', max_steps, 100, ext_strength, CONFIG))
         configuration_list.append(('biggest', max_steps, 100, ext_strength, CONFIG))
+        configuration_list.append(('earliest', max_steps, 100, ext_strength, CONFIG))
 
     with multiprocessing.Pool() as pool:
         outputs = pool.map(calculate_model, configuration_list)
