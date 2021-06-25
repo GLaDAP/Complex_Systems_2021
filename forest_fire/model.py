@@ -1,4 +1,4 @@
-import time
+import time, os
 from mesa import Model, Agent
 from mesa.time import RandomActivation
 from mesa.space import MultiGrid
@@ -138,9 +138,10 @@ class ForestFire(Model):
         self.datacollector.collect(self)
         
         if (self.current_step > self.max_iter) or self.count_type(self, 'On fire') == 0:
-            # df = self.datacollector.get_model_vars_dataframe()
-            # datestring = time.ctime()[4:7]+'-'+time.ctime()[8:10]+'-'+time.ctime()[11:16]
-            # df.to_csv('{}-report-{}.csv'.format(datestring,self.strategy)) ### This gives an error, can u check?
+            df = self.datacollector.get_model_vars_dataframe()
+            datestring = time.ctime()[4:7]+'-'+time.ctime()[8:10]+'-'+time.ctime()[11:16]
+            directory = os.getcwd()
+            df.to_csv('{}\{}-report-{}.csv'.format(directory,datestring,self.strategy)) ### This gives an error, can u check?
             self.running = False
 
         return self.get_statistics()
