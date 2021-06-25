@@ -6,6 +6,14 @@ DESCRIPTION: FireFighter class with functions to extinguish fires.
              This class inherits the walker class.
 """
 from .tree import Tree
+"""
+GROUP:       CSS_18
+DATE:        17-06-2021
+AUTHOR(S):   Sam Kuilboer, David Puroja, Jorrim Prins
+DESCRIPTION: Firefighter class, based on the walker class and used its functions
+             to move over the grid. This class consists of extinghuish functions
+             and step method to proceed a step during an iteration.
+"""
 from .Walker import Walker
 
 class FireFighter(Walker):

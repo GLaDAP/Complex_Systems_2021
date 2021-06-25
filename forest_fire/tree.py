@@ -1,3 +1,12 @@
+"""
+GROUP:       CSS_18
+DATE:        17-06-2021
+AUTHOR(S):   Sam Kuilboer, David Puroja
+DESCRIPTION: Tree class, based on the agent class of the MESA Framework.
+             The class consists of multiple methods repsonsible for either
+             igniting trees or extinghuishing them. 
+             The step method proceeds the agent one step in the model.
+"""
 from mesa import Agent
 
 class Tree(Agent):

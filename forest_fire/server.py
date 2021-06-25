@@ -1,3 +1,9 @@
+"""
+GROUP:       CSS_18
+DATE:        17-06-2021
+AUTHOR(S):   Sam Kuilboer, David Puroja, Jorrim Prins
+DESCRIPTION: Script responsible for setting up the model and the agents. 
+"""
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
@@ -9,6 +15,7 @@ from .firefighter import FireFighter
 from colour import Color
 import json
 
+# Open the config file to easily reuse certain configurations.
 with open('forest_fire/config.json') as json_file:
     CONFIG = json.load(json_file)
     COLOUR_HP = [_.hex for _ in list(Color(CONFIG['model']['colors']['Burned']).range_to(Color(CONFIG['model']['colors']['On fire']), 101))]

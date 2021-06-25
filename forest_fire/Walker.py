@@ -1,7 +1,7 @@
 """
 GROUP:       CSS_18
 DATE:        17-06-2021
-AUTHOR(S):   Sam Kuilboer
+AUTHOR(S):   Sam Kuilboer, David Puroja, Jorrim Prins
 DESCRIPTION: Walker class, with functions to move agents in a certain manner:
                 - random
                 - radius
