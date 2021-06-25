@@ -1,20 +1,13 @@
 """
 GROUP:       CSS_18
 DATE:        17-06-2021
-AUTHOR(S):   Sam Kuilboer
-DESCRIPTION: FireFighter class with functions to extinguish fires. 
-             This class inherits the walker class.
-"""
-from .tree import Tree
-"""
-GROUP:       CSS_18
-DATE:        17-06-2021
 AUTHOR(S):   Sam Kuilboer, David Puroja, Jorrim Prins
 DESCRIPTION: Firefighter class, based on the walker class and used its functions
              to move over the grid. This class consists of extinghuish functions
              and step method to proceed a step during an iteration.
 """
 from .Walker import Walker
+from .tree import Tree
 
 class FireFighter(Walker):
     """
@@ -35,6 +28,9 @@ class FireFighter(Walker):
         self.strategy = strategy
 
     def _get_pos(self):
+        """
+        Gets the coordinate of the agent.
+        """
         return self.pos
 
     def step(self):
@@ -65,4 +61,3 @@ class FireFighter(Walker):
             self.move_towards_hp_fire()
         else:
             self.random_move()
-

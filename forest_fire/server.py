@@ -4,6 +4,7 @@ DATE:        17-06-2021
 AUTHOR(S):   Sam Kuilboer, David Puroja, Jorrim Prins
 DESCRIPTION: Script responsible for setting up the model and the agents. 
 """
+
 from mesa.visualization.modules import CanvasGrid, ChartModule
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
@@ -66,7 +67,7 @@ model_parameters = {
     'max_burn_rate': UserSettableParameter("slider", "Max burnrate", CONFIG['model']['max_burn_rate'], 1, 100, 1),
     'ignition_prob': UserSettableParameter("slider", "Ingnition probability", CONFIG['model']['ignition_prob'], 0.01, 1.0, 0.01),
     'max_hp': UserSettableParameter("slider", "Max HP", CONFIG['agents']['tree']['max_hp'], 1, 100, 1),
-    'max_iter': 1000,
+    'max_iter': 5000,
     'regrowth_rate': UserSettableParameter('slider', 'Regrowth Rate', CONFIG['model']['regrowth_rate'], 5, 50, 5),
     'N_firefighters': UserSettableParameter('slider', 'N Firefighters', CONFIG['model']['N_firefighters'], 10, 1000, 10),
     'strategy': UserSettableParameter('choice', 'Strategy', CONFIG['agents']['fighter']['strategy'], choices=['no_fighter','random', 'closest', 'biggest','earliest']),
@@ -75,5 +76,3 @@ model_parameters = {
 
 # Start the server
 server = ModularServer(ForestFire, [canvas_element, tree_chart], "Forest Fire", model_parameters)
-
-

@@ -10,7 +10,7 @@ DESCRIPTION: Walker class, with functions to move agents in a certain manner:
 
 from .tree import Tree
 from mesa import Agent
-import heapq
+
 
 class Walker(Agent):
     """
@@ -162,6 +162,3 @@ class Walker(Agent):
                 possible_moves.append(coord)
 
         return possible_moves
-
-
-
