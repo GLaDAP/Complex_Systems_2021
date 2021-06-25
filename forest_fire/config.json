@@ -8,7 +8,7 @@
         "N_firefighters": 300,
         "density_trees": 0.9,
         "max_burn_rate": 10,
-        "ignition_prob": 0.6,
+        "ignition_prob": 0.5,
         "regrowth_rate": 30,
         "colors": {
             "On fire": "red",
@@ -28,7 +28,8 @@
             }
         },
         "fighter": {
-            "strategy": "closest"
-        }
+            "strategy": "biggest",
+            "extg_strength": 20
+            }
         }
     }
