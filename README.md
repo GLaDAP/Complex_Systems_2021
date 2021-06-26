@@ -1,41 +1,86 @@
-# Forest Fire Model
+# **Forest-fire behavior under varying firefighting strategies** 
+
+Repository of Group 18 for the course Complex System Simulation (5284COSS6Y), June 2021.
 
 ## Summary
 
-The [forest fire model](http://en.wikipedia.org/wiki/Forest-fire_model) is a simple, cellular automaton simulation of a fire spreading through a forest. The forest is a grid of cells, each of which can either be empty or contain a tree. Trees can be unburned, on fire, or burned. The fire spreads from every on-fire tree to unburned neighbors; the on-fire tree then becomes burned. This continues until the fire dies out.
+This model is used to analyze dynamics of a forest fire under varying firefighting strategies. The forest is initialized with static Tree agents and dynamic Firefighter agents, both initialized randomly over the grid: the trees with a predefined density (0.9 at default settings) and the firefighters with a given amount (default is 100). Fire is started by setting 1 tree in state "On fire", from which it spreads through the lattice using Von-Neumann neighborhood. When a Tree is burned down, it is removed from the system. Each time step new trees are grown on random free spots in the lattice. The firefighters try to extinguish the fire with a strategy defined before running the model. The strategies are: 
+
+- **Closest fire:** Agent moves to the closest fire in a given radius
+- **Biggest fire: ** Firefighter moves to the biggest fire; tree which is on fire and has the highest burn rate 
+- **Earliest**: Move to the tree with the most HP left
+- **Random**: Fire fighters will extinguish randomly the fires by extinguishing a fire when they encounter one.
+
+When there are no firefighters deployed (number of firefighters is equal to 0) or the random or closest strategy is used , the fire in the system will percolate.
+
+### Entities Variables
+
+The model consists of two different types of entities: individual agents and spatial units. Each entity contain state variables or attributes creating the functionality in the model.
+
+- **Individual Agents:** Two agent types are present in the forest fire model: a Tree agent and a Firefighter agent. The 
+- **Spatial Units:** The model uses a multi-grid space system provided by the Mesa framework. The spatial unit are the trees, which are static agents on the lattice. The trees can be 'Fine', ' On fire' or ' Burned', with the latter resulting in removal of the tree from the grid. Trees regrow with a fixed rate each timestep and are regrown with full HP.
+
+### Process Overview
+
+At each timestep, first the tree agents are activated in random order to update the burn rate of the tree, if the tree is on fire. When the tree is on fire, at each time step the tree burns with a fixed burn rate. When a tree has zero HP left, the tree is removed from the grid. If a tree on fire is extinguished, no HP is regenerated. After all the trees are updated, the firefighters are randomly activated. Depending on the strategy used, the firefighter will move towards a fire and try to extinguish it with a predefined extinguish rate.
+
+On each time step, new trees are added to the system on empty random grid cells in the system.
+
+### Installation
+
+To install the dependencies use pip and the requirements.txt in this directory. e.g.
+
+```
+    $ pip install -r requirements.txt
+```
+
+The dependencies are as follows:
+
+- Mesa: to run the actual model
+- pandas: to save the results from runs in a csv
+- matplotlib: to plot the results
+- jupyter: to use the visualization functions found in the notebook.
+
+- scipy: `scipy.ndimage` is used in the model for cluster size detection
 
 ## How to Run
 
-To run the model interactively, run ``mesa runserver`` in this directory. e.g.
+To run the model interactively, run ``python run.py`` in this directory. e.g.
 
 ```
-    $ mesa runserver
+    $ python run.py
 ```
 
 Then open your browser to [http://127.0.0.1:8521/](http://127.0.0.1:8521/) and press Reset, then Run. 
 
-To view and run the model analyses, use the ``Forest Fire Model`` Notebook.
+To view visualizations used in the presentation, use the ``Figures.ipynb`` Notebook using ``jupyter notebook``.
 
 ## Files
 
-### ``forest_fire/model.py``
-
-This defines the model. There is one agent class, **TreeCell**. Each TreeCell object which has (x, y) coordinates on the grid, and its condition is *Fine* by default. Every step, if the tree's condition is *On Fire*, it spreads the fire to any *Fine* trees in its [Von Neumann neighborhood](http://en.wikipedia.org/wiki/Von_Neumann_neighborhood) before changing its own condition to *Burned Out*.
-
-The **ForestFire** class is the model container. It is instantiated with width and height parameters which define the grid size, and density, which is the probability of any given cell having a tree in it. When a new model is instantiated, cells are randomly filled with trees with probability equal to density. All the trees in the left-hand column (x=0) are set to *On Fire*.
-
-Each step of the model, trees are activated in random order, spreading the fire and burning out. This continues until there are no more trees on fire -- the fire has completely burned out.
-
-
-### ``forest_fire/server.py``
-
-This code defines and launches the in-browser visualization for the ForestFire model. It includes the **forest_fire_draw** method, which takes a TreeCell object as an argument and turns it into a portrayal to be drawn in the browser. Each tree is drawn as a rectangle filling the entire cell, with a color based on its condition. *Fine* trees are green, *On Fire* trees red, and *Burned Out* trees are black.
+- `forest_fire/data/*`: contains two folders with csv-output from previous simulations for different configurations
+- `forest_fire/figures/*`: contains images used in the presentation and analysis of the model
+- `forest_fire/config.json`: contains default parameter settings used to run the model
+- `forest_fire/firefighter.py`: Defines the Firefighter agent
+- `forest_fire/model.py`: Defines the ForestFire model
+- `forest_fire/server.py`: contains definitions to start the interactive mesa visualization server
+- `forest_fire/tree.py`: Defines the Tree agent
+- `forest_fire/Walker.py`: contains definitions used by `firefighter.py` for walking using different strategies
+- `run_model.py`: Helper file to run the model multiple times in parallel with different configurations and store statistics
+- `run.py`: Launches a model visualization server provided by Mesa
+- 
 
 ## Further Reading
 
 Read about the Forest Fire model on Wikipedia: http://en.wikipedia.org/wiki/Forest-fire_model
 
-This is directly based on the comparable NetLogo model:
+This example is based on the existing Mesa example for simulating a forest fire, found here: [ForestFire model](https://github.com/projectmesa/mesa/tree/main/examples/forest_fire)
 
-Wilensky, U. (1997). NetLogo Fire model. http://ccl.northwestern.edu/netlogo/models/Fire. Center for Connected Learning and Computer-Based Modeling, Northwestern University, Evanston, IL.
+most of the code is however rewritten, with only using small part of the code from Mesa.
 
+## References
+
+- Dorrer, G. A., & Yarovoy, S. V. (2020, April). Description of wildfires spreading and extinguishing with the aid of agent-based models. In *IOP Conference Series: Materials Science and Engineering* (Vol. 822, No. 1, p. 012010). IOP Publishing.
+- Hu, X., & Sun, Y. (2007, December). Agent-based modeling and simulation of wildland fire suppression. In *2007 Winter Simulation Conference* (pp. 1275-1283). IEEE.
+- Malamud, B. D., & Turcotte, D. L. (1999). Self-organized criticality applied to natural hazards. *Natural Hazards*, *20*(2), 93-116.
+
+- Kazil, J., Masad, D., & Crooks, A. (2021). *projectmesa/mesa*. Utilizing Python for Agent-Based Modeling: The Mesa Framework. https://github.com/projectmesa/mesa/tree/main/examples/forest_fire.
