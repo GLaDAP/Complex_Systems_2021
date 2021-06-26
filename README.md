@@ -7,7 +7,7 @@ Repository of Group 18 for the course Complex System Simulation (5284COSS6Y), Ju
 This model is used to analyze dynamics of a forest fire under varying firefighting strategies. The forest is initialized with static Tree agents and dynamic Firefighter agents, both initialized randomly over the grid: the trees with a predefined density (0.9 at default settings) and the firefighters with a given amount (default is 100). Fire is started by setting 1 tree in state "On fire", from which it spreads through the lattice using Von-Neumann neighborhood. When a Tree is burned down, it is removed from the system. Each time step new trees are grown on random free spots in the lattice. The firefighters try to extinguish the fire with a strategy defined before running the model. The strategies are: 
 
 - **Closest fire:** Agent moves to the closest fire in a given radius
-- **Biggest fire: ** Firefighter moves to the biggest fire; tree which is on fire and has the highest burn rate 
+- **Biggest fire:** Firefighter moves to the biggest fire; tree which is on fire and has the highest burn rate 
 - **Earliest**: Move to the tree with the most HP left
 - **Random**: Fire fighters will extinguish randomly the fires by extinguishing a fire when they encounter one.
 
@@ -17,8 +17,8 @@ When there are no firefighters deployed (number of firefighters is equal to 0) o
 
 The model consists of two different types of entities: individual agents and spatial units. Each entity contain state variables or attributes creating the functionality in the model.
 
-- **Individual Agents:** Two agent types are present in the forest fire model: a Tree agent and a Firefighter agent. The 
-- **Spatial Units:** The model uses a multi-grid space system provided by the Mesa framework. The spatial unit are the trees, which are static agents on the lattice. The trees can be 'Fine', ' On fire' or ' Burned', with the latter resulting in removal of the tree from the grid. Trees regrow with a fixed rate each timestep and are regrown with full HP.
+- **Individual Agents:** Two agent types are present in the forest fire model: a Tree agent and a Firefighter agent. The Tree agent is a static and is explained under *spatial units*.  Firefighter agents move through the grid with a fixed radius (default 5), using the Von Neumann neighborhood. The firefighter will move to a fire in the radius (when one is present) depending on the strategy used. It then extinguish the fire at a certain rate per timestep and moves to the next fire depending on the strategy.
+- **Spatial Units:** The model uses a multi-grid space system provided by the Mesa framework. The spatial unit are the trees, which are static agents on the lattice. The trees can be 'Fine', 'On fire' or 'Burned', with the latter resulting in removal of the tree from the grid. Trees regrow with a fixed rate each timestep and are regrown with full HP. Firefighters have direct impact on this spatial unit since they interact with burning trees.
 
 ### Process Overview
 
@@ -67,7 +67,6 @@ To view visualizations used in the presentation, use the ``Figures.ipynb`` Noteb
 - `forest_fire/Walker.py`: contains definitions used by `firefighter.py` for walking using different strategies
 - `run_model.py`: Helper file to run the model multiple times in parallel with different configurations and store statistics
 - `run.py`: Launches a model visualization server provided by Mesa
-- 
 
 ## Further Reading
 
